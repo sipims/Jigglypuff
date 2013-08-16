@@ -23,7 +23,6 @@ urls = (
     '/login', 'Login',
     '/admin', 'Admin',
     '/add', 'Add',
-    '/register', 'Register',
     '/favicon.ico', 'Favicon'
 )
 
