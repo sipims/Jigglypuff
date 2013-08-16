@@ -2,6 +2,13 @@
 # -*-coding:utf-8 -*-
 import web
 import hashlib
+from datetime import datetime
+
+'''
+  This module is used as a model module for users.
+  It contains all the CRUD operations.
+'''
+
 #SALTY_GOODNESS = u'5gR3dvtres$@;1£56u&&$"FDergjngrekjkj4223234erwgnkvgdvdfkm'
 
 #Must be set by the thing importing this module
@@ -23,6 +30,9 @@ def get_user_by_name(name):
   except AttributeError:
     return None
 
+def get_all_users():
+  return collection.find()
+
 def authenticate(username, password):
   user = collection.find_one({'username':username, 'password':pswd(password)})
   return user if user else None
@@ -34,7 +44,8 @@ def login(user):
 def logout():
   session.kill()
 
-def register(**kwargs):
+def add(**kwargs):
+  kwargs['create_date'] = datetime.now()
   user = collection.save(kwargs)
   return user
 

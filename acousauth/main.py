@@ -8,9 +8,13 @@ from pymongo import MongoClient
 from session import MongoStore
 from web import form
 import users
+import gridfs
 
+# In order to make session work
 web.config.debug = False
-web.config.session_parameters['timeout'] = 60
+
+# Session timeout
+web.config.session_parameters['timeout'] = 60 * 60
 
 urls = (
     '/', 'Index',
@@ -18,6 +22,7 @@ urls = (
     '/submit', 'Submit',
     '/login', 'Login',
     '/admin', 'Admin',
+    '/add', 'Add',
     '/register', 'Register',
     '/favicon.ico', 'Favicon'
 )
@@ -29,12 +34,17 @@ tmpl = web.template.render("tmpl/")
 client = MongoClient()
 db = client.mydb2
 
+# Get GridFS for avatars
+gfsAvatar = gridfs.GridFS(db)
+
 # Create app object here
 app = web.application(urls, globals())
 
 # Create session
 session = web.session.Session(app, MongoStore(db, 'sessions'))
 users.session = session
+
+# Create mongo db's collection
 users.collection = db.users
 
 class Index:
@@ -55,6 +65,10 @@ class Submit:
         return "OK"
 
 class Login:
+  '''
+    Login page: for admin to login
+  '''
+
   def __init__(self):
     self.login = form.Form(
           form.Textbox('username'),
@@ -69,53 +83,79 @@ class Login:
   def POST(self):
     post = web.input(_method='POST')
     #try:
-    user = users.authenticate(post['username'], post['password'])
+    #user = users.authenticate(post['username'], post['password'])
+    user = users.get_user_by_name(post['username'])
     if user is None:
-      return "Not found"
+      return 'Not found'
+    elif user['password'] != post['password']:
+      return 'Wrong password'
+    elif user['authority'] != 0:
+      return 'Not admin'
     else:
       users.login(user)
       return web.seeother('/admin')
 
 class Admin:
+  '''
+    Admin page: show all the registered users.
+  '''
+
   def GET(self):
     user = users.get_user_by_sid()
     if user is None:
       return web.seeother('/login')
     else:
-      return user['username']
+      allUsers = users.get_all_users()
+      return tmpl.admin(allUsers)
 
-class Register:
+class Add:
+  '''
+    Add page: for admin to add new user
+  '''
+
   def __init__(self):
-    self.register = form.Form(
+    self.add = form.Form(
           form.Textbox('username'),
           form.Password('password'),
-          form.Password('pwdagain'),
-          form.Button('Sign Up'),
+          form.Radio('authority', ['Admin', 'Guest']),
+          form.Button('Add'),
         )
 
   def GET(self):
-    form = self.register()
-    return tmpl.register(form)
+    user = users.get_user_by_sid()
+    if user is None:
+      return web.seeother('/login')
+    else:
+      form = self.add()
+      return tmpl.add(form)
 
   def POST(self):
     post = web.input(_method='POST')
 
-    username = post['username']
-    pwd      = post['password']
-    pwdagain = post['pwdagain']
+    username  = post['username']
+    pwd       = post['password']
+    authority = 0 if post['authority'] == 'Admin' else 1
 
     # Validate
-    if username or pwd or passwd is None:
-      return "field blank"
-    elif pwd != pwdagain:
-      return "password not the same"
+    #if username or pwd or pwdagain or authority is None:
+      #return "field blank"
+    if username is None:
+      return 'Please fill the username'
+    elif pwd is None:
+      return 'Please fill the password'
+    elif authority is None:
+      return 'Please fill the authority'
     elif users.get_user_by_name(username) is not None:
       return "user exists"
     else:
-      user = users.register(username=username, password=pwd)
-      return "Insert success"
+      user = users.add(username=username, password=pwd, authority=authority)
+      return web.seeother('/admin')
 
 class Favicon:
+  '''
+    Show the favicon of this website
+  '''
+
   def GET(self):
     with open('static/favicon.ico', 'rb') as f:
       return f.read()
