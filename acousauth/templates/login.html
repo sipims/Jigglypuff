@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Audio Recorder - Login{% endblock %}
+{% block content %}
+  <div class="container center">
+      <form class="login-form" method="post">
+        <div class="control-group">
+          <input type="text" class="login-field" id="login-name" placeholder="Enter username" name="username">
+          <label class="login-field-icon fui-user" for="login-name"></label>
+        </div>
+        <div class="control-group">
+          <input type="password" class="login-field" id="login-pass" placeholder="Password" name="password">
+          <label class="login-field-icon fui-lock" for="login-pass"></label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-large btn-block">Login</button>
+      </form>
+  </div>
+{% endblock %}

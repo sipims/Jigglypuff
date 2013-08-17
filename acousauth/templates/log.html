@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Audio Recorder - Admin Log{% endblock %}
+{% block content %}
+  <div class="container center">
+    <div class="log-table">
+      <div class="log-table-head">
+        <h1 class="table-name span3">Admin - Log</h1>
+        <div class="pull-right ui-select">
+          <a class="btn btn-small btn-success btn-block check-users" href="/admin">Check Users</a>
+          <a class="btn btn-small btn-info btn-block add-user" href="/add">+ Add User</a>
+        </div>
+      </div>
+      <table class="table table-hover">
+        <thead class="table-head">
+          <tr>
+            <td>USERNAME</td>
+            <td>PASSWORD</td>
+            <td>AUTHORITY</td>
+            <td>CREATED DATE</td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>{{ user['username'] }}</td>
+            <td>{{ user['password'] }}</td>
+            {% if user['authority'] == 0 %}
+            <td><em class="tag-authority admin">admin</em></td>
+            {% else %}
+            <td><em class="tag-authority guest">guest</em></td>
+            {% endif %}
+            <td class="last">
+              <span class="pull-left">{{ user['create_date'].ctime() }}</span>
+
+              <ul class="tag-edit">
+                <li>
+                <span class="fui-new"></span>
+                </li>
+                <li class="last">
+                <span class="fui-cross"></span>
+                </li>
+              </ul>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+

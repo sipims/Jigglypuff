@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Audio Recorder - Add{% endblock %}
+{% block content %}
+  <div class="container center">
+      <form class="add-user-form" method="post">
+        <div class="control-group">
+          <input type="text" class="add-user-field" id="add-user-name" placeholder="Enter username" name="username">
+          <label class="add-user-field-icon fui-user" for="add-user-name"></label>
+        </div>
+        <div class="control-group">
+          <input type="password" class="add-user-field" id="add-user-pass" placeholder="Pick a password" name="password">
+          <label class="add-user-field-icon fui-lock" for="add-user-pass"></label>
+        </div>
+        <div class="control-group">
+          <input type="password" class="add-user-field" id="add-user-passagain" placeholder="Retype password" name="password">
+          <label class="add-user-field-icon fui-lock" for="add-user-passagain"></label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-large btn-block">Add</button>
+      </form>
+  </div>
+{% endblock %}

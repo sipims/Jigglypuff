@@ -7,6 +7,7 @@ import pymongo
 from pymongo import MongoClient
 from session import MongoStore
 from web import form
+from web.contrib.template import render_jinja
 import users
 import gridfs
 
@@ -23,11 +24,17 @@ urls = (
     '/login', 'Login',
     '/admin', 'Admin',
     '/add', 'Add',
-    '/favicon.ico', 'Favicon'
+    '/log', 'Log'
 )
 
 # Define the template directory
 tmpl = web.template.render("tmpl/")
+
+# Define Jinja2
+render = render_jinja(
+      'templates',  # Jinja2 template directory
+      encoding = 'utf-8',
+    )
 
 # Get mongodb
 client = MongoClient()
@@ -68,21 +75,12 @@ class Login:
     Login page: for admin to login
   '''
 
-  def __init__(self):
-    self.login = form.Form(
-          form.Textbox('username'),
-          form.Password('password'),
-          form.Button('Login'),
-        )
-
   def GET(self):
-    form = self.login()
-    return tmpl.login(form)
+    return render.login()
 
   def POST(self):
     post = web.input(_method='POST')
-    #try:
-    #user = users.authenticate(post['username'], post['password'])
+
     user = users.get_user_by_name(post['username'])
     if user is None:
       return 'Not found'
@@ -104,29 +102,22 @@ class Admin:
     if user is None:
       return web.seeother('/login')
     else:
-      allUsers = users.get_all_users()
-      return tmpl.admin(allUsers)
+      #allUsers = users.get_all_users()
+      #allUsers['create_date'] = str(allUsers['create_date'])
+      #print allUsers['create_date']
+      return render.admin(users=users.get_all_users())
 
 class Add:
   '''
     Add page: for admin to add new user
   '''
 
-  def __init__(self):
-    self.add = form.Form(
-          form.Textbox('username'),
-          form.Password('password'),
-          form.Radio('authority', ['Admin', 'Guest']),
-          form.Button('Add'),
-        )
-
   def GET(self):
     user = users.get_user_by_sid()
     if user is None:
       return web.seeother('/login')
     else:
-      form = self.add()
-      return tmpl.add(form)
+      return render.add()
 
   def POST(self):
     post = web.input(_method='POST')
@@ -150,14 +141,9 @@ class Add:
       user = users.add(username=username, password=pwd, authority=authority)
       return web.seeother('/admin')
 
-class Favicon:
-  '''
-    Show the favicon of this website
-  '''
-
+class Log:
   def GET(self):
-    with open('static/favicon.ico', 'rb') as f:
-      return f.read()
+    return render.log()
 
 class MTimerClass(threading.Thread):  # cookie监控时钟
     def __init__(self,fn,args=(),sleep=1):

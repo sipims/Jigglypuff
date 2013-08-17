@@ -1,0 +1,11 @@
+.bs-footer {
+  padding-top: 40px;
+  padding-bottom: 30px;
+  margin-top: 100px;
+  text-align: center;
+}
+
+.bs-footer p {
+  margin-bottom: 0;
+  color: #777;
+}
