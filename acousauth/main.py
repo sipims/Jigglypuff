@@ -4,9 +4,9 @@ import time;
 import threading;
 import web
 import sys,wave
-import numpy as np
-from scikits.audiolab import Sndfile, Format
-import struct
+#import numpy as np
+#from scikits.audiolab import Sndfile, Format
+#import struct
 urls = (
     '/', 'index',
     '/submit', 'submit'
