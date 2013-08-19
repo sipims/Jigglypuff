@@ -4,6 +4,7 @@ import time;
 import threading;
 import web
 import sys,wave
+import subprocess
 #import numpy as np
 #from scikits.audiolab import Sndfile, Format
 #import struct
@@ -44,7 +45,7 @@ class submit:
         #ifile = wave.open("temp.wav")
         wavfile = wave.open(filename,'wb')
         #wavfile.setparams(ifile.getparams())
-        wavfile.setparams((2, 2, 44100, 44100*4, 'NONE', 'not compressed'))
+        wavfile.setparams((1, 2, 44100, 44100*4, 'NONE', 'not compressed'))
         #sampwidth = ifile.getsampwidth()
         #print sampwidth
         #fmts = (None, "=B", "=h", None, "=l")
@@ -105,6 +106,21 @@ class MTimerClass(threading.Thread):  # cookie监控时钟
 def GetSearchinfo():
     # to do
     pass;
+
+
+def run_minimodem(filename, bitrate, mark, space):
+    command = "minimodem -r {} -M {} -S {} -f\
+    {}".format(str(bitrate),str(mark),str(space),str(filename))
+    
+    try:
+        process1 = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        process1.wait()
+        for line in iter(process1.stdout.readline, b''):
+            print "RESULT:",line
+        
+    except Exception,E:
+        print "Error in executing minimodem"
+        return 1
     
 
 def float32_wav_file(sample_array, sample_rate):
@@ -129,8 +145,9 @@ def float32_wav_file(sample_array, sample_rate):
   return wav_file
 
 if __name__ == "__main__":
-    app = web.application(urls, globals())
+    #app = web.application(urls, globals())
     #tCheck=MTimerClass(GetSearchinfo, '',  10);
     #tCheck.setDaemon(True); # 随主线程一起结果
     #tCheck.start();         #线程启动
-    app.run()
+    #app.run()
+    run_minimodem('test.wav',100, 1600, 800) 

@@ -36,9 +36,9 @@ var condition_2 = false;
 */
 
 function saveAudio() {
-    audioRecorder.exportWAV( doneEncoding );
+   // audioRecorder.exportWAV( doneEncoding );
     // could get mono instead by saying
-    // audioRecorder.exportMonoWAV( doneEncoding );
+    audioRecorder.exportMonoWAV( doneEncoding );
 }
 
 function drawWave( buffers ) {
