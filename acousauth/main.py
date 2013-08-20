@@ -10,6 +10,8 @@ from web import form
 from web.contrib.template import render_jinja
 import users
 import gridfs
+import json
+import re
 
 # In order to make session work
 web.config.debug = False
@@ -24,7 +26,8 @@ urls = (
     '/login', 'Login',
     '/admin', 'Admin',
     '/add', 'Add',
-    '/log', 'Log'
+    '/log', 'Log',
+    '/edit', 'Edit',
 )
 
 # Define the template directory
@@ -83,14 +86,15 @@ class Login:
 
     user = users.get_user_by_name(post['username'])
     if user is None:
-      return 'Not found'
+      response = {'message': 'nonexist'}
     elif user['password'] != post['password']:
-      return 'Wrong password'
-    elif user['authority'] != 0:
-      return 'Not admin'
+      response = {'message': 'nomatch'}
+    elif user['authority'] == 1:
+      response = {'message': 'nopermission'}
     else:
       users.login(user)
-      return web.seeother('/admin')
+      response = {'message': 'success'}
+    return json.dumps(response)
 
 class Admin:
   '''
@@ -98,14 +102,33 @@ class Admin:
   '''
 
   def GET(self):
-    user = users.get_user_by_sid()
-    if user is None:
-      return web.seeother('/login')
+    query = web.ctx.query
+
+    if query == "":
+      user = users.get_user_by_sid()
+      if user is None:
+        return web.seeother('/login')
+      else:
+        return render.admin(users=users.get_all_users())
     else:
-      #allUsers = users.get_all_users()
-      #allUsers['create_date'] = str(allUsers['create_date'])
-      #print allUsers['create_date']
-      return render.admin(users=users.get_all_users())
+      pattern = re.compile(r'method=(.+?)&username=(.+)')
+      result = pattern.findall(query)
+      method = result[0][0]
+      username = result[0][1]
+
+      if method == 'delete':
+        users.del_user_by_name(username)
+        response = {'message': 'delete'}
+      return json.dumps(response)
+
+  #def POST(self):
+    #post = web.input(_method='POST')
+    #print post
+    #return json.dumps('yes')
+
+    #if post['cmd'] == 'delete':
+      #print post['username']
+
 
 class Add:
   '''
@@ -122,28 +145,45 @@ class Add:
   def POST(self):
     post = web.input(_method='POST')
 
-    username  = post['username']
-    pwd       = post['password']
-    authority = 0 if post['authority'] == 'Admin' else 1
-
     # Validate
-    #if username or pwd or pwdagain or authority is None:
-      #return "field blank"
-    if username is None:
-      return 'Please fill the username'
-    elif pwd is None:
-      return 'Please fill the password'
-    elif authority is None:
-      return 'Please fill the authority'
-    elif users.get_user_by_name(username) is not None:
-      return "user exists"
+    user = users.get_user_by_name(post['username'])
+    if user is not None:
+      response = {'message': 'false'}
     else:
-      user = users.add(username=username, password=pwd, authority=authority)
-      return web.seeother('/admin')
+      auth = 1 if post['authority'] == 'guest' else 0
+      user = users.add(username=post['username'], password=post['password'], authority=auth)
+      response = {'message': 'true'}
+    return json.dumps(response)
 
 class Log:
   def GET(self):
     return render.log()
+
+class Edit:
+  def GET(self):
+    query = web.ctx.query
+
+    if query == '':
+      return web.seeother('/admin')
+    else:
+      return render.edit()
+
+  def POST(self):
+    post = web.input(_method='POST')
+    query = web.ctx.query
+    pattern = re.compile(r'username=(.+)')
+    result = pattern.findall(query)
+    username = result[0]
+
+    if username == '':
+      response = {'message': 'false'}
+    else:
+      users.change_password(username, post['password'])
+      response = {'message': 'true'}
+    return json.dumps(response)
+
+
+
 
 class MTimerClass(threading.Thread):  # cookie监控时钟
     def __init__(self,fn,args=(),sleep=1):

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Audio Recorder - Add{% endblock %}
+{% block content %}
+<script src="//code.jquery.com/jquery.js"></script>
+<script src="/static/js/jquery.validate.js"></script>
+<script>
+$().ready(function() {
+	// validate signup form on keyup and submit
+	$("#add-user-form").validate({
+		rules: {
+			username: {
+				required: true,
+				minlength: 2
+			},
+			password: {
+				required: true,
+				minlength: 6
+			},
+			pwdagain: {
+				required: true,
+				minlength: 5,
+				equalTo: "#add-user-pass"
+			}
+		},
+		messages: {
+			username: {
+				required: "Please enter a username",
+				minlength: "Username must consist of at least 2 characters"
+			},
+			password: {
+				required: "Please provide a password",
+				minlength: "Password must consist at least 6 characters"
+			},
+			pwdagain: {
+				required: "Please provide a password",
+				minlength: "Your password must consist at least 6 characters",
+				equalTo: "Password must match"
+			}
+		},
+    submitHandler: function(form) {
+      form.submit();
+    }
+	});
+});
+
+</script>
+
+<style type="text/css">
+#add-user-form label.error {
+  font-weight: bold;
+  color: red;
+  padding: 1px 8px 4px 8px;
+}
+</style>
+
+
+  <div class="container center">
+      <form class="add-user-form" id="add-user-form" method="post">
+        <fieldset>
+          <div class="control-group">
+            <div class="controls">
+              <input type="text" class="add-user-field" id="add-user-name" placeholder="Enter username" name="username">
+            </div>
+            <label class="add-user-field-icon fui-user" for="add-user-name"></label>
+          </div>
+          <div class="control-group">
+            <input type="password" class="add-user-field" id="add-user-pass" placeholder="Pick a password" name="password">
+            <label class="add-user-field-icon fui-lock" for="add-user-pass"></label>
+          </div>
+          <div class="control-group">
+            <input type="password" class="add-user-field" id="add-user-passagain" placeholder="Retype password" name="pwdagain">
+            <label class="add-user-field-icon fui-lock" for="add-user-passagain"></label>
+          </div>
+          <div class="authority-choose">
+            <label class="radio">
+            <input type="radio" name="authority" id="guestRadio" value="guest" data-toggle="radio" checked="">
+              Guest
+            </label>
+            <label class="radio pull-right">
+              <input type="radio" name="authority" id="adminRadio" value="admin" data-toggle="radio">
+              Admin
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-large btn-block">Add</button>
+        </fieldset>
+      </form>
+  </div>
+{% endblock %}

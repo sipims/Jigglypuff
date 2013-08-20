@@ -3632,6 +3632,16 @@ body.vjs-full-window {
   border-radius: 6px;
 }
 
+.edit-form {
+  background-color: #edeff1;
+  margin: 60px 290px;
+  padding: 24px 23px 20px;
+  /*position: relative;*/
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+}
+
 /*.login-form:before {*/
   /*content: '';*/
   /*border-style: solid;*/
@@ -3650,6 +3660,11 @@ body.vjs-full-window {
 }
 
 .add-user-form .control-group {
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.edit-form .control-group {
   margin-bottom: 6px;
   position: relative;
 }
@@ -3674,11 +3689,25 @@ body.vjs-full-window {
   margin-bottom: 10px !important;
 }
 
+.edit-form .edit-field {
+  border-color: transparent;
+  font-size: 17px;
+  padding-bottom: 11px;
+  padding-top: 11px;
+  text-indent: 3px;
+  width: 299px;
+  margin-bottom: 10px !important;
+}
+
 .login-form .login-field:focus + .login-field-icon {
   color: #1abc9c;
 }
 
 .add-user-form .add-user-field:focus + .add-user-field-icon {
+  color: #1abc9c;
+}
+
+.edit-form .edit-field:focus + .edit-field-icon {
   color: #1abc9c;
 }
 
@@ -3696,6 +3725,19 @@ body.vjs-full-window {
 }
 
 .add-user-form .add-user-field-icon {
+  color: #bfc9ca;
+  font-size: 16px;
+  position: absolute;
+  right: 13px;
+  top: 14px;
+  -webkit-transition: 0.25s;
+  -moz-transition: 0.25s;
+  -o-transition: 0.25s;
+  transition: 0.25s;
+  -webkit-backface-visibility: hidden;
+}
+
+.edit-form .edit-field-icon {
   color: #bfc9ca;
   font-size: 16px;
   position: absolute;
@@ -3819,6 +3861,82 @@ a.check-log {
 a.check-users {
   margin-right: 20px;
 }
+
+.authority-choose label {
+  display: inline;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.authority-choose {
+  margin: 0px 38px 15px 38px;
+}
+
+label.valid {
+  width: 24px;
+  height: 24px;
+  background: url(assets/img/valid.png) center center no-repeat;
+  display: inline-block;
+  text-indent: -9999px;
+}
+label.error {
+  font-weight: bold;
+  color: red;
+  padding: 2px 8px;
+  margin-top: 2px;
+}
+
+.alert {
+  width: 310px;
+  margin: -3px auto -32px auto;
+  /*margin-top: -3px;*/
+  /*margin-bottom: -32px;*/
+}
+
+#add-user-form label.error {
+  font-weight: bold;
+  color: red;
+  padding: 1px 8px 4px 8px;
+}
+
+#edit-form label.error {
+  font-weight: bold;
+  color: red;
+  padding: 1px 8px 4px 8px;
+}
+
+.mybutton {
+  border: 0px;
+  background-color: transparent;
+  margin-right: 0;
+  padding-right: 0;
+  color: #34495E;
+}
+
+.form-head {
+  width: 100%;
+  margin-top: -14px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-family: "Lato", sans-serif;
+  color: #16A085;
+}
+
+.bootbox {
+  margin-top: 100px;
+}
+
+div.modal-footer a {
+  display: inline;
+}
+
+/*a.btn.null {*/
+  /*width: 80px;*/
+/*}*/
+
+/*a.btn.btn-primary {*/
+  /*width: 180px;*/
+/*}*/
 
 .last-col {
   overflow: hidden;

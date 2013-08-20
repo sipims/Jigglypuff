@@ -1,12 +1,50 @@
 {% extends "base.html" %}
 {% block title %}Audio Recorder - Admin Users{% endblock %}
 {% block content %}
+<script src="//code.jquery.com/jquery.js"></script>
+<script src="/static/js/bootbox.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('i#del').on('click', function() {
+    // Get the username you want to delete
+    var username_str = $('td:first-child', $(this).parents('tr')).html();
+
+    bootbox.confirm("Do you want to delete this user?", function(response) {
+      if (response == true) {
+        $.ajax({
+          type: "GET",
+          dataType: "json",
+          data: {
+            method: "delete",
+            username: username_str,
+          },
+          success: function(response) {
+            if (response.message == "delete") {
+              row = 'tr#' + username_str;
+              $(row).animate({background: "#fBC7C7"}, "fast").animate({opacity: "hide"}, "slow");
+            }
+          },
+        });
+      }
+    });
+    return false;
+  });
+
+  $('i#edit').on('click', function() {
+    var username_str = $('td:first-child', $(this).parents('tr')).html();
+
+    $(location).attr('href', '/edit?username=' + username_str);
+  });
+});
+</script>
+
   <div class="container center">
     <div class="users-table">
       <div class="users-table-head">
         <h1 class="table-name span3">Admin - Users</h1>
         <div class="pull-right ui-select">
-          <a class="btn btn-small btn-success btn-block check-log" href="/log">Check Log</a>
+          <a class="btn btn-small btn-success btn-block check-log" href="/log" id="check-log">Check Log</a>
           <a class="btn btn-small btn-info btn-block add-user" href="/add">+ Add User</a>
         </div>
       </div>
@@ -19,9 +57,10 @@
             <td>CREATED DATE</td>
           </tr>
         </thead>
+        <!--<form method="post">-->
         <tbody>
           {% for user in users %}
-          <tr>
+          <tr id={{ user['username'] }}>
             <td>{{ user['username'] }}</td>
             <td>{{ user['password'] }}</td>
             {% if user['authority'] == 0 %}
@@ -34,16 +73,24 @@
 
               <ul class="tag-edit">
                 <li>
-                <span class="fui-new"></span>
+                  <!--<a class="fui-new" href="/edit?id="></a>-->
+                  <button class="mybutton">
+                    <i class="fui-new" id="edit" rel="tooltip" title="Change password"></i>
+                  </button>
                 </li>
                 <li class="last">
-                <span class="fui-cross"></span>
+                  <!--<span class="fui-cross"></span>-->
+                  <!--<a class="fui-cross" href="/delete?id="></a>-->
+                  <button class="mybutton">
+                    <i class="fui-cross" id="del" rel="tooltip" title="Delete the user"></i>
+                  </button>
                 </li>
               </ul>
             </td>
           </tr>
           {% endfor %}
         </tbody>
+        <!--</form>-->
       </table>
     </div>
   </div>

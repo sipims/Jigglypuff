@@ -1,21 +1,88 @@
 {% extends "base.html" %}
 {% block title %}Audio Recorder - Add{% endblock %}
 {% block content %}
+<script src="//code.jquery.com/jquery.js"></script>
+<script>
+$(document).ready(function() {
+  $('form:not(.filter) :input:visible:first').focus();
+
+  $("#submit").click(function() {
+    var username_str = $("input#add-user-name").val();
+    var password_str = $("input#add-user-pass").val();
+    var pwdagain_str = $("input#add-user-passagain").val();
+    var authority_str = $("input:radio[name=authority]:checked").val();
+
+    // Validate the input fileds
+    if (username_str.length == 0) {
+      $('#alert').removeClass().addClass('alert alert-error').text('Please enter the username!');
+      return false;
+    } else if (password_str.length == 0) {
+      $('#alert').removeClass().addClass('alert alert-error').text('Please enter the password!');
+      return false;
+    } else if (pwdagain_str.length == 0) {
+      $('#alert').removeClass().addClass('alert alert-error').text('Please retype the password!');
+      return false;
+    } else if (password_str != pwdagain_str) {
+      $('#alert').removeClass().addClass('alert alert-error').text('Password doesn\'t match, please enter again.');
+      $('input[type=password]').val('');
+      return false;
+    }
+
+    // Validate if the user exists
+    $.ajax({
+      type: "POST",
+      dataType: "json",
+      data: {
+        username : username_str,
+        password : password_str,
+        authority: authority_str,
+      },
+      success: function(response) {
+        if (response.message == "false") {
+          $('#alert').removeClass().addClass('alert alert-error').text('User exists! Please choose another username');
+          $('input[type=text]').val('');
+          $('input[type=password]').val('');
+        } else {
+          $(location).attr('href', '/admin');
+        }
+      },
+    });
+    return false;
+  });
+});
+</script>
+
   <div class="container center">
-      <form class="add-user-form" method="post">
-        <div class="control-group">
-          <input type="text" class="add-user-field" id="add-user-name" placeholder="Enter username" name="username">
-          <label class="add-user-field-icon fui-user" for="add-user-name"></label>
-        </div>
-        <div class="control-group">
-          <input type="password" class="add-user-field" id="add-user-pass" placeholder="Pick a password" name="password">
-          <label class="add-user-field-icon fui-lock" for="add-user-pass"></label>
-        </div>
-        <div class="control-group">
-          <input type="password" class="add-user-field" id="add-user-passagain" placeholder="Retype password" name="password">
-          <label class="add-user-field-icon fui-lock" for="add-user-passagain"></label>
-        </div>
-        <button type="submit" class="btn btn-primary btn-large btn-block">Add</button>
+    <div id="alert" class="hide"><a class="close" data-dismiss="alert">x</a></div>
+      <form class="add-user-form" id="add-user-form" method="post">
+        <h3 class="form-head">Register</h3>
+        <fieldset>
+          <div class="control-group">
+            <div class="controls">
+              <input type="text" class="add-user-field" id="add-user-name" placeholder="Enter username" name="username">
+            </div>
+            <label class="add-user-field-icon fui-user" for="add-user-name"></label>
+          </div>
+          <div class="control-group">
+            <input type="password" class="add-user-field" id="add-user-pass" placeholder="Pick a password" name="password">
+            <label class="add-user-field-icon fui-lock" for="add-user-pass"></label>
+          </div>
+          <div class="control-group">
+            <input type="password" class="add-user-field" id="add-user-passagain" placeholder="Retype password" name="pwdagain">
+            <label class="add-user-field-icon fui-lock" for="add-user-passagain"></label>
+          </div>
+          <div class="authority-choose">
+            <label class="radio">
+            <input type="radio" name="authority" id="guestRadio" value="guest" data-toggle="radio" checked="">
+              Guest
+            </label>
+            <label class="radio pull-right">
+              <input type="radio" name="authority" id="adminRadio" value="admin" data-toggle="radio">
+              Admin
+            </label>
+          </div>
+          <button type="submit" id="submit" class="btn btn-primary btn-large btn-block">Add</button>
+        </fieldset>
       </form>
   </div>
 {% endblock %}

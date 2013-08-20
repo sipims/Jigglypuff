@@ -1,8 +1,56 @@
 {% extends "base.html" %}
 {% block title %}Audio Recorder - Login{% endblock %}
 {% block content %}
+<script src="//code.jquery.com/jquery.js"></script>
+<script>
+$(document).ready(function() {
+  $('form:not(.filter) :input:visible:first').focus();
+
+  $("#submit").click(function() {
+    var username_str = $("input#login-name").val();
+    var password_str = $("input#login-pass").val();
+
+    // Validate the input fileds
+    if (username_str.length == 0) {
+      $('#alert').removeClass().addClass('alert alert-error').text('Please enter the username!');
+      return false;
+    } else if (password_str.length == 0) {
+      $('#alert').removeClass().addClass('alert alert-error').text('Please enter the password!');
+      return false;
+    }
+
+    // Validate if the user exists
+    $.ajax({
+      type: "POST",
+      dataType: "json",
+      data: {
+        username : username_str,
+        password : password_str,
+      },
+      success: function(response) {
+        if (response.message == "nonexist") {
+          $('#alert').removeClass().addClass('alert alert-error').text('User doesn\'t exist!');
+          $('input[type=text]').val('');
+          $('input[type=password]').val('');
+        } else if (response.message == "nomatch") {
+          $('#alert').removeClass().addClass('alert alert-error').text('Wrong password! Please enter again.')
+          $('input[type=password]').val('');
+        } else if (response.message == "nopermission") {
+          $('#alert').removeClass().addClass('alert alert-error').text('You are a guest, permission denied!')
+        } else {
+          $(location).attr('href', '/admin');
+        }
+      },
+    });
+    return false;
+  });
+});
+</script>
+
   <div class="container center">
+      <div id="alert" class="hide"></div>
       <form class="login-form" method="post">
+        <h3 class="form-head">Login</h3>
         <div class="control-group">
           <input type="text" class="login-field" id="login-name" placeholder="Enter username" name="username">
           <label class="login-field-icon fui-user" for="login-name"></label>
@@ -11,7 +59,7 @@
           <input type="password" class="login-field" id="login-pass" placeholder="Password" name="password">
           <label class="login-field-icon fui-lock" for="login-pass"></label>
         </div>
-        <button type="submit" class="btn btn-primary btn-large btn-block">Login</button>
+        <button type="submit" id="submit" class="btn btn-primary btn-large btn-block" id="submit">Login</button>
       </form>
   </div>
 {% endblock %}

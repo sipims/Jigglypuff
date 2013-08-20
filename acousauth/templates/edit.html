@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Audio Recorder - Add{% endblock %}
+{% block content %}
+<script src="//code.jquery.com/jquery.js"></script>
+<script>
+$(document).ready(function() {
+  $("#submit").click(function() {
+    var password_str = $("input#password").val();
+    var pwdagain_str = $("input#passagain").val();
+
+    // Validate the input fileds
+    if (password_str.length == 0) {
+      $('#alert').removeClass().addClass('alert alert-error').text('Please enter the password!');
+      return false;
+    } else if (pwdagain_str.length == 0) {
+      $('#alert').removeClass().addClass('alert alert-error').text('Please retype the password!');
+      return false;
+    } else if (password_str != pwdagain_str) {
+      $('#alert').removeClass().addClass('alert alert-error').text('Password doesn\'t match, please enter again.');
+      $('input[type=password]').val('');
+      return false;
+    }
+
+    // Validate if the user exists
+    $.ajax({
+      type: "POST",
+      dataType: "json",
+      data: {
+        password : password_str,
+      },
+      success: function(response) {
+        if (response.message == "false") {
+          $('#alert').removeClass().addClass('alert alert-error').text('Password change error!');
+          $('input[type=password]').val('');
+        } else {
+          $(location).attr('href', '/admin');
+        }
+      },
+    });
+    return false;
+  });
+});
+</script>
+
+  <div class="container center">
+    <div id="alert" class="hide"><a class="close" data-dismiss="alert">x</a></div>
+      <form class="edit-form" id="edit-form" method="post">
+        <h3 class="form-head">Change Password</h3>
+        <fieldset>
+          <div class="control-group">
+            <input type="password" class="edit-field" id="password" placeholder="New password" name="password">
+            <label class="edit-field-icon fui-lock" for="password"></label>
+          </div>
+          <div class="control-group">
+            <input type="password" class="edit-field" id="passagain" placeholder="Retype password" name="pwdagain">
+            <label class="edit-field-icon fui-lock" for="passagain"></label>
+          </div>
+          <button type="submit" id="submit" class="btn btn-primary btn-large btn-block">Change</button>
+        </fieldset>
+      </form>
+  </div>
+{% endblock %}
+

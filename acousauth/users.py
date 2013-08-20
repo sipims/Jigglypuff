@@ -49,6 +49,12 @@ def add(**kwargs):
   user = collection.save(kwargs)
   return user
 
+def del_user_by_name(name):
+  collection.remove({'username':name})
+
+def change_password(name, password):
+  collection.update({'username': name}, {'$set': {'password': password}})
+
 def pswd(password):
   #seasoned = password + SALTY_GOODNESS
   #seasoned = seasoned.encode('utf-8')
