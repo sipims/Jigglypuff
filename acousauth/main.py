@@ -3,7 +3,6 @@
 import time;
 import threading;
 import web
-<<<<<<< HEAD
 import pymongo
 from pymongo import MongoClient
 from session import MongoStore
@@ -34,6 +33,7 @@ urls = (
     '/add', 'Add',
     '/log', 'Log',
     '/edit', 'Edit',
+)
 
 i = 0
 class index:
