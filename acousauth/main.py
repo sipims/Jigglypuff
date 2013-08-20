@@ -26,7 +26,7 @@ web.config.debug = False
 web.config.session_parameters['timeout'] = 60 * 60
 
 urls = (
-    '/', 'Index',
+    '/', 'index',
     '/index', 'index',
     '/submit', 'submit',
     '/login', 'Login',
