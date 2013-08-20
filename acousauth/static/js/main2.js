@@ -15,9 +15,9 @@
 
 var audioContext = new AudioContext();
 var audioInput = null,
-    realAudioInput = null,
-    inputPoint = null,
-    audioRecorder = null;
+var realAudioInput = null,
+var inputPoint = null,
+var audioRecorder = null;
 var rafID = null;
 var analyserContext = null;
 var canvasWidth, canvasHeight;
@@ -36,9 +36,9 @@ var condition_2 = false;
 */
 
 function saveAudio() {
-   // audioRecorder.exportWAV( doneEncoding );
+    audioRecorder.exportWAV( doneEncoding );
     // could get mono instead by saying
-    audioRecorder.exportMonoWAV( doneEncoding );
+    // audioRecorder.exportMonoWAV( doneEncoding );
 }
 
 function drawWave( buffers ) {
@@ -49,16 +49,14 @@ function drawWave( buffers ) {
 
 function postResult(buffers){
     //audioRecorder.exportWAV(doneEncoding );
-
+    //saveAudio();
     //alert(buffers[0][10]);
-    //var myJsonString = JSON.stringify(buffers[0]);
-    //alert(buffers[0].length);
+
     var canvas = document.getElementById( "wavedisplay" );
 
     drawBuffer( canvas.width, canvas.height, canvas.getContext('2d'), buffers[0] );
-    audioRecorder.exportWAV( doneEncoding );
-    //saveAudio();
     /*
+    var myJsonString = JSON.stringify(buffers[0]);
     $(function(){
 
         $(showcase).text("Posting Data...");
@@ -74,6 +72,41 @@ function postResult(buffers){
                // xhr.setRequestHeader("X-File-Size",
            },
             success: function(msg){  
+                //alert("SUCC");
+                $(showcase).text("Success");
+                $(showcase).text("Monitoring");
+            }
+            });
+
+
+    });
+
+*/
+
+    
+}
+
+
+function doneEncoding( blob ) {
+    //alert(blob);
+    //var myJsonString = JSON.stringify(blob);
+    //Recorder.forceDownload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
+    //recIndex++;
+
+        $(function(){
+        $(showcase).text("Posting Data...");
+         $.ajax({                                                 //调用jquery的ajax方法
+            type: "POST",                                     //设置ajax方法提交数据的形式
+            url: "/submit",                                      
+            data: blob,
+            contentType: "multipart/form-data",
+            beforeSend: function(xhr){
+                var upload = xhr.upload;
+                xhr.setRequestHeader("Cache-control","no-cache");
+                //xhr.setRequestHeader("X-File-Name","K");
+               // xhr.setRequestHeader("X-File-Size",
+           },
+            success: function(msg){  
                 alert("SUCC");
                 $(showcase).text("Success");
             }
@@ -81,35 +114,7 @@ function postResult(buffers){
 
 
     });
-*/
-    
-}
 
-
-function doneEncoding( blob ) {
-    //Recorder.forceDownload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
-    //recIndex++;
-    var fd = new FormData();
-    fd.append('fname','test.wav');
-    fd.append('data',blob);
-
-        $(function(){
-
-        $(showcase).text("Posting Data...");
-         $.ajax({                                                 //调用jquery的ajax方法
-            type: "POST",                                     //设置ajax方法提交数据的形式
-            url: "/submit",                                      
-            data: fd,
-            processData: false,
-            contentType: false,
-            success: function(msg){  
-                //alert("SUCC");
-                $(showcase).text("Success");
-            }
-            });
-
-
-    });
 }
 
 function toggleRecording( e ) {
@@ -138,7 +143,6 @@ function startRecording() {
             first = false;
             audioRecorder.clear();
             audioRecorder.record();
-            $(showcase).text("Recording....");
         }
 }
 
@@ -147,11 +151,10 @@ function stopRecording() {
         if(first == false){
         audioRecorder.stop();
         //e.classList.remove("recording");
-        //audioRecorder.getBuffers( drawWave );
+        audioRecorder.getBuffers( drawWave );
         audioRecorder.getBuffers( postResult);
         //saveAudio();
         first = true;
-        $(showcase).text("Recording......Done!");
         //saveAudio();
     }
 }
@@ -221,13 +224,13 @@ function updateAnalysers(time) {
 
             // condition 1
             if(i > 50 && i < 90){
-            if(magnitude >= 100){
+            if(magnitude >= 150){
                 //broadcast noise
                 condition_1 = true;
         }
             // condition 2
             if(i > 50 && i < 80){
-                if(magnitude >= 100){
+                if(magnitude >= 110){
                     condition_2 = true;
                 }
             }
@@ -235,6 +238,7 @@ function updateAnalysers(time) {
             // judge if both OK
             if(condition_1 == true && condition_2 == true){
                 // Do something
+                $(showcase).text("Recording...");
                 startRecording();
                 stateChange(condition_1);
                 resetCondition();
@@ -251,6 +255,7 @@ function updateAnalysers(time) {
 function resetCondition(){
     condition_1 = false;
     condition_2 = false;
+
 }
 
 function toggleMono() {

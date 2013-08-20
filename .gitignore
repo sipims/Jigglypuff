@@ -26,3 +26,9 @@ nohup.out
 
 # For temp files
 *.temp
+*.swp
+
+# For osx
+.DS_Store
+
+
