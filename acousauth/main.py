@@ -10,6 +10,8 @@ from web import form
 from web.contrib.template import render_jinja
 import users
 import gridfs
+import struct
+import commands
 import json
 import re
 import sys,wave
@@ -67,7 +69,7 @@ class submit:
         #ifile = wave.open("temp.wav")
         wavfile = wave.open(filename,'wb')
         #wavfile.setparams(ifile.getparams())
-        wavfile.setparams((1, 2, 44100, 44100*4, 'NONE', 'not compressed'))
+        wavfile.setparams((2, 2, 44100, 44100*4, 'NONE', 'not compressed'))
         #sampwidth = ifile.getsampwidth()
         #print sampwidth
         #fmts = (None, "=B", "=h", None, "=l")
@@ -78,6 +80,8 @@ class submit:
          #   iframe =
         wavfile.writeframes(data)
         wavfile.close()
+        stereo2mono(filename)
+        run_minimodem('mono.wav',100, 4600, 1800)
         #f = open(filename,'wb')
         #f.write(data)
         #f.close()
@@ -241,11 +245,47 @@ def run_minimodem(filename, bitrate, mark, space):
         process1.wait()
         for line in iter(process1.stdout.readline, b''):
             print "RESULT:",line
-
     except Exception,E:
         print "Error in executing minimodem"
         return 1
 
+def stereo2mono(wave_file):
+  """
+  Convert the stereo file to mono using Sox and default options
+  """
+  #Check if sox is installed
+  status, output = commands.getstatusoutput('sox')
+  if output[-9:] == 'not found':
+    print " "
+    print "Sox is not installed!"
+    print "Please install with: sudo apt-get install sox libsox*"
+    print " "
+    print "Exiting program."
+    print " "
+    sys.exit()
+  #Get the stereo filename
+  print " "
+  print "Stereo file, will convert to mono."
+  print " "
+  mono_name = "mono.wav"
+  status, output = commands.getstatusoutput('sox ' + wave_file + ' -c 1 ' + mono_name)
+  print " "
+  if status != 0:
+      print "Problem with file ", wave_file[:-4]
+      print "   Could not be converted to mono:,"
+      print output
+      print " "
+      print "Exiting program."
+      sys.exit()
+  else:
+      print "Stereo to mono conversion completed.\n"
+#   status, output = commands.getstatusoutput('rm -f ' + wave_file)
+#   print output
+#   status, output = commands.getstatusoutput('mv ' + mono_name + " " + wave_file)
+#   if status != 0:
+#   print output
+#     sys.exit()
+  return mono_name
 
 def float32_wav_file(sample_array, sample_rate):
   byte_count = (len(sample_array)) * 4  # 32-bit floats
@@ -269,9 +309,11 @@ def float32_wav_file(sample_array, sample_rate):
   return wav_file
 
 if __name__ == "__main__":
-    #app = web.application(urls, globals())
+    app = web.application(urls, globals())
     #tCheck=MTimerClass(GetSearchinfo, '',  10);
     #tCheck.setDaemon(True); # 随主线程一起结果
     #tCheck.start();         #线程启动
-    #app.run()
-    run_minimodem('test.wav',100, 1600, 800)
+    app.run()
+    #run_minimodem('test.wav',100, 1600, 800)
+    #stereo2mono('cs.wav')
+    
