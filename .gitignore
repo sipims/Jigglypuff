@@ -31,4 +31,5 @@ nohup.out
 # For osx
 .DS_Store
 
-
+# No wave files
+*.wav
