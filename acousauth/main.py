@@ -59,34 +59,22 @@ class submit:
         #f = Sndfile(filename, 'w', Format('wav','pcm32'), 1, 44100)
         #f.write_frames(data)
         #f.close()
-        data = data[229:-44]
-
-        #wavfile = float32_wav_file(data, 44100)
-        #f = open(filename,'wb')
-        #f.write(wavfile)
-        #f.close()
-        #filename = "test.wav"
-        #ifile = wave.open("temp.wav")
-        wavfile = wave.open(filename,'wb')
-        #wavfile.setparams(ifile.getparams())
-        wavfile.setparams((2, 2, 44100, 44100*4, 'NONE', 'not compressed'))
-        #sampwidth = ifile.getsampwidth()
-        #print sampwidth
-        #fmts = (None, "=B", "=h", None, "=l")
-        #fmt = fmts[sampwidth]
-        #dcs = (None, 128, 0, None, 0)
-        #dc = dcs[sampwidth]
-        #for i in range (ifile.getnframes()):
-         #   iframe =
-        wavfile.writeframes(data)
-        wavfile.close()
-        stereo2mono(filename)
-        run_minimodem('mono.wav',100, 4600, 1800)
-        #f = open(filename,'wb')
-        #f.write(data)
-        #f.close()
-        i = i + 1
-        #print data
+        if len(data) > 800000:
+          # process the audio data, delete several unused info
+          data = data[229:-44]
+          # create wave file (stereo)
+          wavfile = wave.open(filename,'wb')
+          wavfile.setparams((2, 2, 44100, 44100*4, 'NONE', 'not compressed'))
+          wavfile.writeframes(data)
+          wavfile.close()
+          # change it to mono version
+          stereo2mono(filename)
+          # run minimodem to decode FSK
+          run_minimodem('mono.wav',100, 4600, 1800)
+          i = i + 1
+          #print data
+        else:  # if data length is too small, pass
+          pass
         return "OK"
 
 class Login:
