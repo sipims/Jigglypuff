@@ -1,5 +1,5 @@
 # Jigglypuff
-Enabling Secure Keyless Acoustic Communication for Smartphones
+Enabling Secure Keyless Acoustic Communication between smartphone and server
 
 ![Copy Right:http://userserve-ak.last.fm/serve/_/36166979/Jigglypuff++Seduction.gif](http://userserve-ak.last.fm/serve/_/36166979/Jigglypuff++Seduction.gif)]
 
@@ -23,7 +23,7 @@ If you see something like:
 You are good to go
 
 
-## How to Use
+## How to Use the app
 ===
 When you start the application, there are two buttons. First for sender and another for receiver.
 
@@ -75,15 +75,15 @@ Error correction code (ECC) is a systematic way of building codes that could det
 
 ### 2.  Demonstrate decode function by transferring voice frequency to text.(1 week)
 
-
+Done
 
 ### 3.  Do the test on smart phones. To see if we can get the right text by choosing a specific voice frequency (handled by FSK).(1 week)
 
-
+Done
 
 ### 4.  Testing if we can use FSK algorithm to transfer any text information to the voice frequency, and vice versa.(2 weeks)
 
-
+Done
 
 ### 5. By adding the white noise, our group implement security function and test the correctness.(4 weeks)
 
