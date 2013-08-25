@@ -221,7 +221,7 @@ function updateAnalysers(time) {
 
             // condition 1
             if(i > 50 && i < 90){
-            if(magnitude >= 100){
+            if(magnitude >= 190){
                 //broadcast noise
                 condition_1 = true;
         }
