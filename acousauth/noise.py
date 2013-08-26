@@ -98,7 +98,10 @@ def psudorand_noise(RATE, WAVE, filename):
     # add sin wave
     for s in sinwave:
         wav_file.writeframes(struct.pack('h', int(s)))
+    
     # add noise data
+    print sinwave
+    print waveMatrix
     wav_file.writeframes(data)
     wav_file.close()
 
@@ -133,4 +136,4 @@ def make_sinewave(samples, hz, frame_rate, amp):
     return waver
 
 #__make_soundfile('sine.wav')
-#truerand_noise(RATE, WAVE, 'asae.wav')
+psudorand_noise(RATE, WAVE, 'noise.wav')

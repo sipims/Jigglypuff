@@ -70,7 +70,7 @@ class submit:
           # change it to mono version
           stereo2mono(filename)
           # run minimodem to decode FSK
-          run_minimodem('mono.wav',100, 4600, 1800)
+          run_minimodem('mono.wav',100, 800, 600)
           i = i + 1
           #print data
         else:  # if data length is too small, pass
@@ -226,7 +226,7 @@ def GetSearchinfo():
 
 def run_minimodem(filename, bitrate, mark, space):
     command = "minimodem -r {} -M {} -S {} -f\
-    {} -c 1".format(str(bitrate),str(mark),str(space),str(filename))
+    {} -c 0.3".format(str(bitrate),str(mark),str(space),str(filename))
 
     try:
         process1 = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
