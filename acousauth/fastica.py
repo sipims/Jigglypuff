@@ -16,8 +16,8 @@ def get_length(sig1, sig2):
 		return len1
 
 
-sig1, fs1, enc1 = wavread('mix.wav')
-sig2, fs2, enc2 = wavread('jamming.wav')
+#sig1, fs1, enc1 = wavread('mix.wav')
+#sig2, fs2, enc2 = wavread('jamming.wav')
 #mixed1 = sig1 + 0.5 * sig2
 #mixed2 = sig2 + 0.6 * sig1
  
@@ -43,3 +43,4 @@ def fastICA(mix_file, jamming_file):
 	wavwrite(sources, 'sources.wav', fs, enc)
 
 
+fastICA('mono.wav','ee.wav')
