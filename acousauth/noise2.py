@@ -12,7 +12,9 @@ import math
 import pyaudio
 import sys
 import truerandom
-
+import struct
+import wave
+import random
 #-----------CLASSES--------------#
 class myURLopener(urllib.FancyURLopener):
 
@@ -43,20 +45,32 @@ def getnum(min,max,amount):
 
 
 PyAudio = pyaudio.PyAudio
-RATE = 10000
+RATE = 100000
 WAVE = 5800
 
-waveMatrix = getnum(600,800,RATE)
-waveMatrix2 = getnum(600,800,RATE)
-for x in waveMatrix:
-	if x == 1:
-		x = 600
-	else:
-		x = 800
+#waveMatrix = getnum(5600,5601,RATE)
+#waveMatrix2 = getnum(600,800,RATE)
+term = random.randint(4600, 4800)
+waveMatrix = []
+#waver = getnum(600,800,samples)
+#print waver
+
+for x in range(RATE):
+    #add the random number to the list
+    waveMatrix.append(term)
+    term = random.randint(600, 800)
+
 
 print waveMatrix
 data = ''.join([chr(int(math.sin(x/((RATE/waveMatrix[x])/math.pi))*127+128)) for x in xrange(RATE)])
+#create wav file
+wav_file = wave.open('ee.wav', "w")
 
+    # o create a wave file you must fill these parameter
+wav_file.setparams((1, 2, 6000, 1000, "NONE", "not compressed"))
+wav_file.writeframes(data)
+wav_file.close()
+'''
 p = PyAudio()
 
 stream = p.open(format =
@@ -69,3 +83,4 @@ for DISCARD in xrange(5):
 stream.stop_stream()
 stream.close()
 p.terminate()
+'''

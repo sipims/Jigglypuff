@@ -70,7 +70,7 @@ class submit:
           # change it to mono version
           stereo2mono(filename)
           # run minimodem to decode FSK
-          run_minimodem('mono.wav',100, 800, 600)
+          run_minimodem('mono.wav',100, 4600, 1800)
           i = i + 1
           #print data
         else:  # if data length is too small, pass
