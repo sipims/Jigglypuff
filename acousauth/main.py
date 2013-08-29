@@ -24,6 +24,11 @@ web.config.debug = False
 # Session timeout
 web.config.session_parameters['timeout'] = 60 * 60
 
+render = render_jinja(
+      'templates',
+      encoding = 'utf-8',
+    )
+
 urls = (
     '/', 'index',
     '/index', 'index',
@@ -34,6 +39,24 @@ urls = (
     '/log', 'Log',
     '/edit', 'Edit',
 )
+
+# Create app object here
+app = web.application(urls, globals())
+
+# Get mongodb
+client = MongoClient()
+db = client.mydb2
+
+# Get GridFS for avatars
+gfsAvatar = gridfs.GridFS(db)
+
+
+# Create session
+session = web.session.Session(app, MongoStore(db, 'sessions'))
+users.session = session
+
+# Create mongo db's collection
+users.collection = db.users
 
 i = 0
 class index:
@@ -273,5 +296,5 @@ if __name__ == "__main__":
     #tCheck=MTimerClass(GetSearchinfo, '',  10);
     #tCheck.setDaemon(True); # 随主线程一起结果
     #tCheck.start();         #线程启动
-    #app.run()
-    run_minimodem('test.wav',100, 1600, 800)
+    app.run()
+    #run_minimodem('test.wav',100, 1600, 800)
