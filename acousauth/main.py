@@ -226,7 +226,7 @@ def GetSearchinfo():
 
 def run_minimodem(filename, bitrate, mark, space):
     command = "minimodem -r {} -M {} -S {} -f\
-    {} -c 0.3".format(str(bitrate),str(mark),str(space),str(filename))
+    {} -c 1".format(str(bitrate),str(mark),str(space),str(filename))
 
     try:
         process1 = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)

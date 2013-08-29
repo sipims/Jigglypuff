@@ -77,6 +77,7 @@ def get_wave_align(w1, w2):
 
     return (s2 - s1) * 2
 
+
 if __name__ == "__main__":
     w1 = WaveData("noise.wav")
     w2 = WaveData("mono.wav")
@@ -90,7 +91,29 @@ if __name__ == "__main__":
     __log__(s1, s2)
     out1 = wave.open("noise_1.wav", "w")
     out1.setparams(w1.params)
-    out1.writeframes(w1.data[0:s1*2])
+    out1.writeframes(w1.data[s1*2+2:])
     out2 = wave.open("mono_1.wav", "w")
     out2.setparams(w2.params)
-    out2.writeframes(w2.data[0:s2*2])
+    out2.writeframes(w2.data[s2*2+2:])
+
+    w1 = WaveData("noise.wav")
+    w2 = WaveData("mono_1.wav")
+    s1 = detect_period_seq(w1.array)[5]
+    s2 = detect_period_seq(w2.array)[5]
+    out1 = wave.open("noise_1.wav", "w")
+    out1.setparams(w1.params)
+    out1.writeframes(w1.data[s1*2+2:])
+    out2 = wave.open("mono_1.wav", "w")
+    out2.setparams(w2.params)
+    out2.writeframes(w2.data[s2*2+2:])
+
+    w1 = WaveData("noise.wav")
+    w2 = WaveData("mono_1.wav")
+    s1 = detect_period_seq(w1.array)[5]
+    s2 = detect_period_seq(w2.array)[5]
+    out1 = wave.open("noise_1.wav", "w")
+    out1.setparams(w1.params)
+    out1.writeframes(w1.data[s1*2+2:])
+    out2 = wave.open("mono_1.wav", "w")
+    out2.setparams(w2.params)
+    out2.writeframes(w2.data[s2*2+2:])

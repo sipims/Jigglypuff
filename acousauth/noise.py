@@ -15,9 +15,12 @@ import truerandom
 import struct
 import wave
 import random
+from numpy import linspace,sin,pi,int16
+from scipy.io.wavfile import write
 
 
-RATE = 10000
+#RATE = 350000
+RATE = 800
 WAVE = 5800
 
 
@@ -26,8 +29,7 @@ class myURLopener(urllib.FancyURLopener):
 
     def http_error_401(self, url, fp, errcode, errmsg, headers, data=None):
         print "Warning: cannot open, site requires authentication"
-        return None
-
+        return None 
 #-----------FUNCTIONS--------------#
 def getnum(min,max,amount):
     global randlist
@@ -36,8 +38,7 @@ def getnum(min,max,amount):
         data = url_opener.open("http://www.random.org/integers/?num="+str(amount)+"&min="+str(min)+"&max="+str(max)+"&col=1&base=10&format=plain&rnd=new")
         randlist=data.readlines()
         data.close()
-        randlist[:] = [line.rstrip('\n') for line in randlist]
-        
+        randlist[:] = [line.rstrip('\n') for line in randlist] 
         for n in range(len(randlist)):
             randlist[n]=int(randlist[n])
 
@@ -47,6 +48,14 @@ def getnum(min,max,amount):
         randlist=[]
         randlist.append(-1)
         return randlist
+
+
+
+# tone synthesis
+def note(freq, len, amp=1, rate=44100):
+ t = linspace(0,len,len*rate)
+ data = sin(2*pi*freq*t)*amp
+ return data.astype(int16) # two byte integers
 
 # rate should less than 10000 or the API will fail
 def truerand_noise(RATE, WAVE, filename):
@@ -77,7 +86,7 @@ def psudorand_noise(RATE, WAVE, filename):
     waveMatrix = []
 
     # sin wave parameters 
-    samples = 5000
+    samples = 10000
     hz = 600.0
     frame_rate = 22025.0
     amp = 44100.0
@@ -85,16 +94,20 @@ def psudorand_noise(RATE, WAVE, filename):
     # make sin wave for sync
     sinwave = make_sinewave(samples, hz, frame_rate, amp)
 
-    # make rand noise
-    for x in range(RATE):
-        #add the random number to the list
-        waveMatrix.append(term)
-        term = random.randint(600, 800)
-    data = ''.join([chr(int(math.sin(x/((RATE/waveMatrix[x])/math.pi))*127+128)) for x in xrange(RATE)])
+    # make empty
+    empty = make_empty(20000)
+
+    tone600 = note(1620,0.001,amp=10000)
+    tone800 = note(1820,0.001,amp=10000)
+
+    #data = ''.join([chr(int(math.sin(x/((RATE/waveMatrix[x])/math.pi))*127+128)) for x in xrange(RATE)])
     #create wav file
     wav_file = wave.open(filename, "w")
     # o create a wave file you must fill these parameter
-    wav_file.setparams((1, 2, 6000, 1000, "NONE", "not compressed"))
+    wav_file.setparams((1, 2, 44100, 44100*4, "NONE", "not compressed"))
+    # add sin wave
+    for s in empty:
+        wav_file.writeframes(struct.pack('h',int(s)))
     # add sin wave
     for s in sinwave:
         wav_file.writeframes(struct.pack('h', int(s)))
@@ -102,7 +115,24 @@ def psudorand_noise(RATE, WAVE, filename):
     # add noise data
     print sinwave
     print waveMatrix
+
+    # make rand noise
+    for x in range(RATE):
+        freq = random.randint(600, 800)
+        #add the random number to the list
+        if(term > 15000):
+             wav_file.writeframes(note(freq,0.01,amp=term))
+        else:
+             wav_file.writeframes(note(freq,0.01,amp=term))
+        term = random.randint(10000, 20000)
+    '''
+    for x in range(RATE):
+        #add random
+        waveMatrix.append(term)
+        term = random.randint(5800,7350)
+    data = ''.join([chr(int(math.sin(x/((RATE/waveMatrix[x])/math.pi))*127+128)) for x in xrange(RATE)])
     wav_file.writeframes(data)
+    '''
     wav_file.close()
 
 
@@ -127,6 +157,12 @@ def __make_soundfile(file_name):
     print( "%s written" % file_name )
 
 
+def make_empty(samples):
+    waver = []
+    for x in range(samples):
+        waver.append(0)
+    return waver
+
 def make_sinewave(samples, hz, frame_rate, amp):
     waver = []
     # loop through and create a sin wave useing the variables
@@ -137,3 +173,7 @@ def make_sinewave(samples, hz, frame_rate, amp):
 
 #__make_soundfile('sine.wav')
 psudorand_noise(RATE, WAVE, 'noise.wav')
+# A tone, 2 seconds, 44100 samples per second
+#tone = note(600,2,amp=10000)
+
+#write('440hzAtone.wav',44100,tone) # writing the sound to a file
