@@ -86,5 +86,5 @@ def stereo2mono(wave_file):
   return mono_name
 
 
-fastICA('mono_1.wav','noise_1.wav')
+fastICA('mono11.wav','noise_1.wav')
 stereo2mono('sources.wav')

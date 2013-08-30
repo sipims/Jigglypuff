@@ -69,6 +69,8 @@ class submit:
           wavfile.close()
           # change it to mono version
           stereo2mono(filename)
+          # denoise
+          #run_sox()
           # run minimodem to decode FSK
           run_minimodem('mono.wav',100, 800, 600)
           i = i + 1
@@ -237,6 +239,17 @@ def run_minimodem(filename, bitrate, mark, space):
         print "Error in executing minimodem"
         return 1
 
+def run_sox():
+    command = "sh denoise.sh"
+    try:
+        process1 = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        process1.wait()
+        for line in iter(process1.stdout.readline, b''):
+            print "RESULT:",line
+    except Exception,E:
+        print "Error in executing minimodem"
+        return 1
+
 def stereo2mono(wave_file):
   """
   Convert the stereo file to mono using Sox and default options
@@ -297,6 +310,7 @@ def float32_wav_file(sample_array, sample_rate):
   return wav_file
 
 if __name__ == "__main__":
+   # run_sox()
     app = web.application(urls, globals())
     #tCheck=MTimerClass(GetSearchinfo, '',  10);
     #tCheck.setDaemon(True); # 随主线程一起结果
