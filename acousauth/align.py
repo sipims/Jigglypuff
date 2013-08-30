@@ -139,7 +139,7 @@ if __name__ == "__main__":
     mins = 99999999999999999999
     new_start = -1
 
-    for i in xrange(-5, 5):
+    for i in xrange(-5, 10):
         start = s2+2+cut_pos+delta*i
         num = end - start + 1
 
@@ -147,7 +147,7 @@ if __name__ == "__main__":
                       w2.array[start:end],
                       w1.array[s1+1:s1+num])
 
-        wsize = 70
+        wsize = 75
         changed = 0
         for k in xrange(0, num-80, 10):
             updates = sum(map(lambda x, y: 1 if abs(x) <= abs(y) else 0,
