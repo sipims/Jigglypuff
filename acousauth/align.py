@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
 
 
-    end = 95000
+    end = 45000
     mins = 99999999999999999999
     new_start = -1
 
@@ -143,11 +143,22 @@ if __name__ == "__main__":
         start = s2+2+cut_pos+delta*i
         num = end - start + 1
 
-        changed = sum(map(lambda x,y: 1 if abs(x-y)<abs(x) else 0,
-                          w2.array[start+5000:end], w1.array[s1+1+5000:s1+num]))
+        changes = map(lambda x,y: x-y,
+                      w2.array[start:end],
+                      w1.array[s1+1:s1+num])
 
-        if changed < mins:
-            new_start = start * 2 - delta*2
+        wsize = 70
+        changed = 0
+        for k in xrange(0, num-80, 10):
+            updates = sum(map(lambda x, y: 1 if abs(x) <= abs(y) else 0,
+                              changes[k:k+wsize],
+                              w2.array[start+k:start+k+wsize]))
+            if updates >= 65:
+                changed += 1
+
+        __log__("Examine: ", start, "Num changes: ", changed)
+        if changed <= mins:
+            new_start = start * 2 - 2 * delta
             mins = changed
             __log__("New start: ", new_start, mins)
 
