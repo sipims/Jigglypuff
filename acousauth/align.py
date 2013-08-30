@@ -27,13 +27,13 @@ def cut_series(series, start, window, amph, ampl):
         if all(map(lambda x: abs(x)<=amph and abs(x)>=ampl,
                    series[i:i+window])):
             return i
-        
-    return None        
-        
+
+    return None
+
 
 def decrease_series(series):
     for x in xrange(len(series)-1):
-        if series[x] < series[x+1]: 
+        if series[x] < series[x+1]:
             return False
 
     return True
@@ -41,13 +41,13 @@ def decrease_series(series):
 
 def increase_series(series):
     for x in xrange(len(series)-1):
-        if series[x] > series[x+1]: 
+        if series[x] > series[x+1]:
             return False
 
     return True
 
 
-def find_pole(series, start, window, delta):
+def find_pole(series, start, window, delta, amp):
     mid = window / 2
     left = int(mid - delta * window)
     right = int(mid + delta * window)
@@ -55,13 +55,13 @@ def find_pole(series, start, window, delta):
         subs = series[i:i+window]
         pole = min(subs)
 
-        if pole >= 0:
+        if pole >= 1 or abs(pole)<amp:
             continue
 
         for k in xrange(left, min(right, window-1)):
             if subs[k] == pole:
-                if decrease_series(subs[max(k-2, 0):k]) and \
-                   increase_series(subs[k:min(k+2, window)]):
+#                if decrease_series(subs[max(k-1, 0):k]) and \
+#                   increase_series(subs[k:min(k+1, window)]):
                     return pole, i+k, i+1
 
     return None, start+1, start+1
@@ -75,15 +75,16 @@ def detect_period_seq(series, **kwargs):
     gap_thresh = kwargs.get("gap_thresh", 25)
     n_detected = kwargs.get("n_detected", 20)
     delta = kwargs.get("delta", 0.1)
-    pole0, pos0, left = find_pole(series, 0, window, delta)
+    amp = kwargs.get("amp", 100)
+    pole0, pos0, left = find_pole(series, 0, window, delta, amp)
     m = [pos0]
-    pole0, pos0, left = find_pole(series, pos0, window, delta)
+    pole0, pos0, left = find_pole(series, pos0, window, delta, amp)
     m.append(pos0)
 
     gap = m[1] - m[0]
 
     while (left<len(series)):
-        pole1, pos1, left = find_pole(series, pos0, window, delta)
+        pole1, pos1, left = find_pole(series, pos0, window, delta, amp)
 
         if pole1:
             gap1 = pos1 - pos0
@@ -91,7 +92,7 @@ def detect_period_seq(series, **kwargs):
             if abs(gap1 - gap) <= gap_thresh:
                 m.append(pos1)
             else:
-                m = []
+                m = [pos0]
 
             pos0 = pos1
             gap = gap1
@@ -107,26 +108,55 @@ def get_wave_align(w1, w2):
 
     return (s2 - s1) * 2
 
+
+def make_wave_file(series, params, name):
+    out = wave.open(name, "w")
+    out.setparams(params)
+    out.writeframes(series)
+    out.close()
+
+
 if __name__ == "__main__":
     w1 = WaveData("noise.wav")
     w2 = WaveData("mono.wav")
 
-    default_cut = 1200
+    default_cut = 3000
     cut_pos = cut_series(w2.array[default_cut:], 0, 20, 2100, 0)
 
     cut_pos += default_cut+1
-    
-    s1 = detect_period_seq(w1.array,n_detected=20)[5]
-    s2 = detect_period_seq(w2.array[cut_pos+1:], window=40, delta=0.1, n_detected=20)[5]
 
-    # c = [detect_period_seq(w2.array, delta=d)[0]
-    #      for d in numpy.linspace(0.15, 0.25, 50)]
-    # s2 = int(sum(c) / len(c))
+    s1 = detect_period_seq(w1.array)[15]
+    m2 = detect_period_seq(w2.array[cut_pos+1:])
 
-#    __log__(s1, s2)
-    out1 = wave.open("noise_1.wav", "w")
-    out1.setparams(w1.params)
-    out1.writeframes(w1.data[s1*2+2:])
-    out2 = wave.open("mono_1.wav", "w")
-    out2.setparams(w2.params)
-    out2.writeframes(w2.data[(s2+cut_pos+1)*2+2:])
+    s2 = m2[15]
+
+    delta = ((m2[15] - m2[10] + m2[14] - m2[9] + m2[13] - m2[8]) / 5) / 3
+    __log__(delta, s1, s2)
+
+
+
+    end = 95000
+    mins = 99999999999999999999
+    new_start = -1
+
+    for i in xrange(-5, 5):
+        start = s2+2+cut_pos+delta*i
+        num = end - start + 1
+
+        changed = sum(map(lambda x,y: 1 if abs(x-y)<abs(x) else 0,
+                          w2.array[start+5000:end], w1.array[s1+1+5000:s1+num]))
+
+        if changed < mins:
+            new_start = start * 2 - delta*2
+            mins = changed
+            __log__("New start: ", new_start, mins)
+
+    ss1 = detect_period_seq(w1.array[s1+1:])[0]
+    ss2 = detect_period_seq(w2.array[new_start/2:])[0]
+
+    make_wave_file(w1.data[s1*2+2+ss1*2:], w1.params, "noise_1.wav")
+    make_wave_file(w2.data[new_start+ss2*2:], w2.params, "mono_1.wav")
+
+    if DEBUG:
+        make_wave_file(w1.data[:s1*2+ss1*2], w1.params, "noise_debug.wav")
+        make_wave_file(w2.data[:new_start+ss2*2], w1.params, "mono_debug.wav")
