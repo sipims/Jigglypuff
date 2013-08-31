@@ -119,7 +119,7 @@ if __name__ == "__main__":
     w1 = WaveData("noise.wav")
     w2 = WaveData("mono.wav")
 
-    default_cut = 3000
+    default_cut = 5000
     cut_pos = cut_series(w2.array[default_cut:], 0, 20, 2100, 0)
     cut_pos += default_cut+1
 
