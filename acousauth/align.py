@@ -3,7 +3,6 @@
 
 import wave
 import struct
-import numpy
 
 DEBUG = True
 
@@ -122,52 +121,17 @@ if __name__ == "__main__":
 
     default_cut = 3000
     cut_pos = cut_series(w2.array[default_cut:], 0, 20, 2100, 0)
-
     cut_pos += default_cut+1
 
-    s1 = detect_period_seq(w1.array)[15]
-    m2 = detect_period_seq(w2.array[cut_pos+1:])
+    s1 = detect_period_seq(w1.array, amp=32000)[15]
+    s2 = detect_period_seq(w2.array[cut_pos+1:], amp=32000)[15]
 
-    s2 = m2[15]
-
-    delta = ((m2[15] - m2[10] + m2[14] - m2[9] + m2[13] - m2[8]) / 5) / 3
-    __log__(delta, s1, s2)
-
-
-
-    end = 45000
-    mins = 99999999999999999999
-    new_start = -1
-
-    for i in xrange(-5, 10):
-        start = s2+2+cut_pos+delta*i
-        num = end - start + 1
-
-        changes = map(lambda x,y: x-y,
-                      w2.array[start:end],
-                      w1.array[s1+1:s1+num])
-
-        wsize = 75
-        changed = 0
-        for k in xrange(0, num-80, 10):
-            updates = sum(map(lambda x, y: 1 if abs(x) <= abs(y) else 0,
-                              changes[k:k+wsize],
-                              w2.array[start+k:start+k+wsize]))
-            if updates >= 65:
-                changed += 1
-
-        __log__("Examine: ", start, "Num changes: ", changed)
-        if changed <= mins:
-            new_start = start * 2 - 2 * delta
-            mins = changed
-            __log__("New start: ", new_start, mins)
-
-    ss1 = detect_period_seq(w1.array[s1+1:])[0]
+    new_start = (cut_pos + s2) * 2
     ss2 = detect_period_seq(w2.array[new_start/2:])[0]
 
-    make_wave_file(w1.data[s1*2+2+ss1*2:], w1.params, "noise_1.wav")
+    make_wave_file(w1.data[s1*2+2:], w1.params, "noise_1.wav")
     make_wave_file(w2.data[new_start+ss2*2:], w2.params, "mono_1.wav")
 
     if DEBUG:
-        make_wave_file(w1.data[:s1*2+ss1*2], w1.params, "noise_debug.wav")
+        make_wave_file(w1.data[:s1*2], w1.params, "noise_debug.wav")
         make_wave_file(w2.data[:new_start+ss2*2], w1.params, "mono_debug.wav")
