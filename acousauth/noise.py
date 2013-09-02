@@ -157,6 +157,19 @@ def __make_soundfile(file_name):
     print( "%s written" % file_name )
 
 
+def make_calibration(lowfreq, highfreq, filename):
+    waveMatrix = []
+    #create wav file
+    wav_file = wave.open(filename, "w")
+    # o create a wave file you must fill these parameter
+    wav_file.setparams((1, 2, 44100, 44100*4, "NONE", "not compressed"))
+    # make rand noise
+    for freq in range(lowfreq, highfreq): 
+        #add the random number to the list
+        for term in range(10000, 10001):
+            wav_file.writeframes(note(freq,0.01,amp=term))
+    wav_file.close()
+
 def make_empty(samples):
     waver = []
     for x in range(samples):
@@ -172,6 +185,7 @@ def make_sinewave(samples, hz, frame_rate, amp):
     return waver
 
 #__make_soundfile('sine.wav')
+make_calibration(600, 800, 'cali.wav')
 psudorand_noise(RATE, WAVE, 'noise.wav')
 # A tone, 2 seconds, 44100 samples per second
 #tone = note(600,2,amp=10000)

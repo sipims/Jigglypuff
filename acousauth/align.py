@@ -123,8 +123,8 @@ if __name__ == "__main__":
     cut_pos = cut_series(w2.array[default_cut:], 0, 20, 2100, 0)
     cut_pos += default_cut+1
 
-    s1 = detect_period_seq(w1.array[default_cut:], amp=32000)[15]
-    s2 = detect_period_seq(w2.array[cut_pos+1:], amp=32000)[15]
+    s1 = detect_period_seq(w1.array[default_cut:], amp=22000)[15]
+    s2 = detect_period_seq(w2.array[cut_pos+1:], amp=22000)[15]
 
     new_start = (cut_pos + s2) * 2
     ss1 = detect_period_seq(w1.array[default_cut+s1:])[0]
