@@ -115,7 +115,33 @@ def make_wave_file(series, params, name):
     out.close()
 
 
+def align_file(original, noise, ampV, default_cut):
+
+    w1 = WaveData(noise)
+    w2 = WaveData(original)
+
+    #default_cut = 5000
+    cut_pos = cut_series(w2.array[default_cut:], 0, 20, 2100, 0)
+    cut_pos += default_cut+1
+
+    s1 = detect_period_seq(w1.array[default_cut:], amp=ampV)[15]
+    s2 = detect_period_seq(w2.array[cut_pos+1:], amp=ampV)[15]
+
+    new_start = (cut_pos + s2) * 2
+    ss1 = detect_period_seq(w1.array[default_cut+s1:])[0]
+    ss2 = detect_period_seq(w2.array[new_start/2:])[0]
+
+    make_wave_file(w1.data[(default_cut+s1+ss1)*2+2:], w1.params, "noise_1.wav")
+    make_wave_file(w2.data[new_start+ss2*2:], w2.params, "mono_1.wav")
+
+    if DEBUG:
+        make_wave_file(w1.data[:(default_cut+s1+ss1)*2], w1.params, "noise_debug.wav")
+        make_wave_file(w2.data[:new_start+ss2*2], w1.params, "mono_debug.wav")
+
+
 if __name__ == "__main__":
+    #align_file("mono.wav", "noise.wav", 20000, 5000)
+    '''
     w1 = WaveData("noise.wav")
     w2 = WaveData("mono.wav")
 
@@ -136,3 +162,4 @@ if __name__ == "__main__":
     if DEBUG:
         make_wave_file(w1.data[:(default_cut+s1+ss1)*2], w1.params, "noise_debug.wav")
         make_wave_file(w2.data[:new_start+ss2*2], w1.params, "mono_debug.wav")
+        '''

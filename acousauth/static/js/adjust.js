@@ -26,8 +26,8 @@ var first = true;
 
 
 // define additional flag
-var condition_1 = false;
-var condition_2 = false;
+var condition_1 = true;
+var condition_2 = true;
 
 /* TODO:
 
@@ -98,7 +98,7 @@ function doneEncoding( blob ) {
         $(showcase).text("Posting Data...");
          $.ajax({                                                 //调用jquery的ajax方法
             type: "POST",                                     //设置ajax方法提交数据的形式
-            url: "/submit",                                      
+            url: "/noise",                                      
             data: fd,
             processData: false,
             contentType: false,
@@ -222,20 +222,8 @@ function updateAnalysers(time) {
             // i represents frequency
             // magnitude represents amplitude
 
-
             // condition 1
             if(i > 50 && i < 90){
-            if(magnitude >= 190){
-                //broadcast noise
-                condition_1 = true;
-        }
-            // condition 2
-            if(i > 50 && i < 80){
-                if(magnitude >= 100){
-                    condition_2 = true;
-                }
-            }
-
             // judge if both OK
             if(condition_1 == true && condition_2 == true){
                 // Do something

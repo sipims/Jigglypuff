@@ -17,10 +17,10 @@ import wave
 import random
 from numpy import linspace,sin,pi,int16
 from scipy.io.wavfile import write
-
+from align import WaveData
 
 #RATE = 350000
-RATE = 800
+RATE = 1200
 WAVE = 5800
 
 
@@ -53,6 +53,7 @@ def getnum(min,max,amount):
 
 # tone synthesis
 def note(freq, len, amp=1, rate=44100):
+ amp = 20000
  t = linspace(0,len,len*rate)
  data = sin(2*pi*freq*t)*amp
  return data.astype(int16) # two byte integers
@@ -82,7 +83,6 @@ def truerand_noise(RATE, WAVE, filename):
 
 def psudorand_noise(RATE, WAVE, filename):
 
-    term = random.randint(600, 800)
     waveMatrix = []
 
     # sin wave parameters 
@@ -97,8 +97,8 @@ def psudorand_noise(RATE, WAVE, filename):
     # make empty
     empty = make_empty(20000)
 
-    tone600 = note(1620,0.001,amp=10000)
-    tone800 = note(1820,0.001,amp=10000)
+    #tone600 = note(1620,0.001,amp=10000)
+    #tone800 = note(1820,0.001,amp=10000)
 
     #data = ''.join([chr(int(math.sin(x/((RATE/waveMatrix[x])/math.pi))*127+128)) for x in xrange(RATE)])
     #create wav file
@@ -117,6 +117,7 @@ def psudorand_noise(RATE, WAVE, filename):
     print waveMatrix
 
     # make rand noise
+    term = 90000
     for x in range(RATE):
         freq = random.randint(600, 800)
         #add the random number to the list
@@ -124,7 +125,7 @@ def psudorand_noise(RATE, WAVE, filename):
              wav_file.writeframes(note(freq,0.01,amp=term))
         else:
              wav_file.writeframes(note(freq,0.01,amp=term))
-        term = random.randint(10000, 20000)
+        #term = random.randint(10000, 20000)
     '''
     for x in range(RATE):
         #add random
@@ -164,11 +165,33 @@ def make_calibration(lowfreq, highfreq, filename):
     # o create a wave file you must fill these parameter
     wav_file.setparams((1, 2, 44100, 44100*4, "NONE", "not compressed"))
     # make rand noise
-    for freq in range(lowfreq, highfreq): 
+    #for freq in range(lowfreq, highfreq): 
         #add the random number to the list
-        for term in range(10000, 10001):
+    
+    for freq in range(lowfreq, highfreq):
+        for k in range(5):
+            #freq = 600
+            term = 20000
             wav_file.writeframes(note(freq,0.01,amp=term))
     wav_file.close()
+
+
+def create_noise(origin, received):
+    ori = WaveData(origin)
+    base = WaveData(received)
+    #print len(base.array)
+    #print len(ori.array)
+    print base.array[:1000]
+    ava_cut = []
+    for i in range(len(base.array)):
+        if find_zero(base.array[i-1], base.array[i]) == True:
+            ava_cut.append(i)
+
+def find_zero(poA, poB):
+    if poA < 0 and poB > 0:
+        return True
+    elif poA > 0 and poB < 0:
+        return True
 
 def make_empty(samples):
     waver = []
@@ -185,8 +208,9 @@ def make_sinewave(samples, hz, frame_rate, amp):
     return waver
 
 #__make_soundfile('sine.wav')
-make_calibration(600, 800, 'cali.wav')
-psudorand_noise(RATE, WAVE, 'noise.wav')
+#make_calibration(600, 800, 'cali.wav')
+psudorand_noise(RATE, WAVE, './static/noise.wav')
+#create_noise('./static/noise.wav','noise.wav')
 # A tone, 2 seconds, 44100 samples per second
 #tone = note(600,2,amp=10000)
 
