@@ -147,7 +147,7 @@ class Submit:
           #print match('ddb1cb5590e7530043830f044779250667cb148a',res)
           pwd_list = users.get_all_password()
           #print match('chensi',res)
-          
+
           if res != 1:
             for item in pwd_list:
               if match(res, item) == True:
@@ -235,7 +235,7 @@ class Add:
       response = {'message': 'false'}
     else:
       auth = 1 if post['authority'] == 'guest' else 0
-      user = users.add(username=post['username'], password=users.pwd(post['password']), authority=auth)
+      user = users.add(username=post['username'], password=users.pswd(post['password']), authority=auth)
       response = {'message': 'true'}
 
       logs.add_user(post['username'])
