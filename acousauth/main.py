@@ -156,7 +156,10 @@ class Submit:
             for item in pwd_list:
               if match(res, item) == True:
                 print "Match record"
-                door_status = 1
+                #door_status = 1
+                f = open("succ",'wb')
+                f.write("1")
+                f.close()
                 return "DONE"
             return "ERROR"
 
@@ -420,11 +423,20 @@ class Sse:
     web.header('content-type', 'text/event-stream')
     web.header('Cache-Control', 'no-cache')
     while True:
+      f = open("succ",'rb')
+      k = f.readline()
+      f.close()
+      print k
+      if int(k) == 1:
+        door_status = 1
       if door_status == 1:
         print "open"
         yield 'data: %s\n\n' % (json.dumps({'door': 'open'}))
         time.sleep(5)
         door_status = 0
+        f = open("succ",'wb')
+        f.write('0')
+        f.close()
       else:
         print "close"
         yield 'data: %s\n\n' % (json.dumps({'door': 'close'}))
