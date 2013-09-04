@@ -1,12 +1,19 @@
 #!/usr/bin/python
 # -*-coding:utf-8 -*-
+import os;
+import sys;
+
+#abspath = os.path.dirname(__file__)
+#sys.path.append(abspath)
+#os.chdir(abspath)
+
 import time;
 import threading;
 import web
 import pymongo
 from pymongo import MongoClient
 from session import MongoStore
-from web import form
+from web import form 
 from web.contrib.template import render_jinja
 import users
 import logs
@@ -50,7 +57,8 @@ urls = (
 )
 
 # Create app object here
-#app = web.application(urls, globals())
+app = web.application(urls, globals())
+application = app.wsgifunc()
 
 # Get mongodb
 client = MongoClient()
@@ -110,8 +118,8 @@ class Noise:
 
 
 class Submit:
-
     def POST(self):
+	print "here submit"
         global i
         data = web.data()
         filename = "temp["+str(i)+"].wav"
@@ -134,8 +142,10 @@ class Submit:
           # denoise
           run_sox()
           # run minimodem to decode FSK
+          # run minimodem to decode FSK
           res = run_minimodem('out.wav',100, 800, 600)
           #print match('ddb1cb5590e7530043830f044779250667cb148a',res)
+          pwd_list = users.get_all_password()
           print match('chensi',res)
           '''
           if res != 1:
@@ -166,7 +176,7 @@ class Login:
     user = users.get_user_by_name(post['username'])
     if user is None:
       response = {'message': 'nonexist'}
-    elif user['password'] != post['password']:
+    elif user['password'] != users.pswd(post['password']):
       response = {'message': 'nomatch'}
     elif user['authority'] == 1:
       response = {'message': 'nopermission'}
@@ -414,11 +424,9 @@ class Sse:
 if __name__ == "__main__":
     #app = web.application(urls, globals())
    # run_sox()
-    app = web.application(urls, globals())
+    #app = web.application(urls, globals())
     #tCheck=MTimerClass(GetSearchinfo, '',  10);
     #tCheck.setDaemon(True); # 随主线程一起结果
     #tCheck.start();         #线程启动
     app.run()
     #run_minimodem('test.wav',100, 1600, 800)
-    #stereo2mono('cs.wav')
-
