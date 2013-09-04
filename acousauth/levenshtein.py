@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*-coding:utf-8 -*-
+import difflib
+
 def levenshtein(a,b):
     "Calculates the Levenshtein distance between a and b."
     n, m = len(a), len(b)
@@ -49,7 +51,12 @@ def get_min_length(sig1, sig2):
     else:
         return len1, sig1, len2, sig2
 
+
 def match(first, second):
+    return difflib.SequenceMatcher(a=first.lower(),b=second.lower()).ratio()>0.5
+
+
+def match1(first, second):
     first = str(first)
     second = str(second)
     min_length, min_string, max_length, max_string = get_min_length(first, second)
@@ -58,8 +65,9 @@ def match(first, second):
     for offest in range(max_length - min_length):
         test_string = max_string[offest:min_length+offest]
         score = levenshtein_distance(min_string, test_string)
-        if min_length - 5 > 0:
-            if score < min_length - 5:
+        if min_length - 2 > 0:
+            if score < min_length - 2:
+                print score
                 return True
         else:
             return False

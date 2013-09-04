@@ -155,6 +155,8 @@ class Submit:
           if res != 1:
             for item in pwd_list:
               if match(res, item) == True:
+                print res
+                print item
                 print "Match record"
                 #door_status = 1
                 f = open("succ",'wb')
