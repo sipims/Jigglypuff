@@ -146,15 +146,15 @@ class Submit:
           res = run_minimodem('out.wav',100, 800, 600)
           #print match('ddb1cb5590e7530043830f044779250667cb148a',res)
           pwd_list = users.get_all_password()
-          print match('chensi',res)
-          '''
+          #print match('chensi',res)
+          
           if res != 1:
-            for item in records:
+            for item in pwd_list:
               if match(res, item) == True:
+                print "Match record"
                 return "DONE"
             return "ERROR"
 
-          '''
 
           i = i + 1
           #print data

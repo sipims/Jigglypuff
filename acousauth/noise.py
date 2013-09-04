@@ -227,8 +227,8 @@ def make_sinewave(samples, hz, frame_rate, amp):
 
 #__make_soundfile('sine.wav')
 #make_calibration(600, 800, 'cali.wav')
-#psudorand_noise(RATE, WAVE, './static/noise.wav')
-create_noise('mono_1.wav','noise_1.wav')
+psudorand_noise(RATE, WAVE, './static/noise.wav')
+#create_noise('mono_1.wav','noise_1.wav')
 # A tone, 2 seconds, 44100 samples per second
 #tone = note(600,2,amp=10000)
 
