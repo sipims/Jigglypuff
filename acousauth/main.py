@@ -124,6 +124,7 @@ class Submit:
     def POST(self):
 	print "here submit"
         global i
+        global door_status
         data = web.data()
         filename = "temp["+str(i)+"].wav"
         #sig = np.array([0, 1, 0, -1, 0], dtype=np.float32)
@@ -415,13 +416,15 @@ class Test:
 
 class Sse:
   def GET(self):
+    global door_status
     web.header('content-type', 'text/event-stream')
     web.header('Cache-Control', 'no-cache')
     while True:
       if door_status == 1:
         print "open"
         yield 'data: %s\n\n' % (json.dumps({'door': 'open'}))
-        door_status == 0
+        time.sleep(5)
+        door_status = 0
       else:
         print "close"
         yield 'data: %s\n\n' % (json.dumps({'door': 'close'}))

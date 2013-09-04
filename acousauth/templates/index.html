@@ -11,8 +11,13 @@
       $(document).ready(function() {
         sse = new EventSource('/sse');
         sse.onmessage = function(message) {
-          console.log(JSON.parse(message.data));
-          $('#alert').removeClass().addClass('alert alert-success open-door').text('Open the door!');
+          var data = JSON.parse(message.data);
+          console.log(data.door);
+          if(data.door == "open") {
+            $('#alert').removeClass().addClass('alert alert-success open-door').text('Open the door!');
+          } else {
+            $('#alert').removeClass().addClass('hide');
+          }
         }
       });
     </script>
