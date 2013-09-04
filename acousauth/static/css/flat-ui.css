@@ -3574,6 +3574,15 @@ body.vjs-full-window {
   margin: 80px auto;
 }
 
+.main-frame {
+  margin-top: 60px;
+}
+
+.alert.open-door {
+  width: 76%;
+  margin-top: -20px;
+}
+
 /*.login {*/
   /*background: url(../images/login/imac.png) 0 0 no-repeat;*/
   /*background-size: 940px 778px;*/

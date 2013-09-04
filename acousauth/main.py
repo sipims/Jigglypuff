@@ -9,7 +9,10 @@ from session import MongoStore
 from web import form
 from web.contrib.template import render_jinja
 import users
+import logs
 import gridfs
+import struct
+import commands
 import json
 import re
 import sys,wave
@@ -38,6 +41,8 @@ urls = (
     '/add', 'Add',
     '/log', 'Log',
     '/edit', 'Edit',
+    '/test', 'Test',
+    '/sse', 'Sse',
 )
 
 # Create app object here
@@ -57,12 +62,14 @@ users.session = session
 
 # Create mongo db's collection
 users.collection = db.users
+logs.collection = db.logs
 
 i = 0
 class index:
     def GET(self):
-        tmpl = web.template.render("tmpl/")
-        return tmpl.index()
+        #tmpl = web.template.render("tmpl/")
+        #return tmpl.index()
+        return render.index()
 
     def POST(self):
         #data = web.data()
@@ -80,32 +87,22 @@ class submit:
         #f = Sndfile(filename, 'w', Format('wav','pcm32'), 1, 44100)
         #f.write_frames(data)
         #f.close()
-        data = data[229:-44]
-
-        #wavfile = float32_wav_file(data, 44100)
-        #f = open(filename,'wb')
-        #f.write(wavfile)
-        #f.close()
-        #filename = "test.wav"
-        #ifile = wave.open("temp.wav")
-        wavfile = wave.open(filename,'wb')
-        #wavfile.setparams(ifile.getparams())
-        wavfile.setparams((1, 2, 44100, 44100*4, 'NONE', 'not compressed'))
-        #sampwidth = ifile.getsampwidth()
-        #print sampwidth
-        #fmts = (None, "=B", "=h", None, "=l")
-        #fmt = fmts[sampwidth]
-        #dcs = (None, 128, 0, None, 0)
-        #dc = dcs[sampwidth]
-        #for i in range (ifile.getnframes()):
-         #   iframe =
-        wavfile.writeframes(data)
-        wavfile.close()
-        #f = open(filename,'wb')
-        #f.write(data)
-        #f.close()
-        i = i + 1
-        #print data
+        if len(data) > 800000:
+          # process the audio data, delete several unused info
+          data = data[229:-44]
+          # create wave file (stereo)
+          wavfile = wave.open(filename,'wb')
+          wavfile.setparams((2, 2, 44100, 44100*4, 'NONE', 'not compressed'))
+          wavfile.writeframes(data)
+          wavfile.close()
+          # change it to mono version
+          stereo2mono(filename)
+          # run minimodem to decode FSK
+          run_minimodem('mono.wav',100, 800, 600)
+          i = i + 1
+          #print data
+        else:  # if data length is too small, pass
+          pass
         return "OK"
 
 class Login:
@@ -129,6 +126,8 @@ class Login:
     else:
       users.login(user)
       response = {'message': 'success'}
+
+      logs.login(post['username'])
     return json.dumps(response)
 
 class Admin:
@@ -154,6 +153,8 @@ class Admin:
       if method == 'delete':
         users.del_user_by_name(username)
         response = {'message': 'delete'}
+
+        logs.delete_user(username)
       return json.dumps(response)
 
 class Add:
@@ -179,11 +180,13 @@ class Add:
       auth = 1 if post['authority'] == 'guest' else 0
       user = users.add(username=post['username'], password=post['password'], authority=auth)
       response = {'message': 'true'}
+
+      logs.add_user(post['username'])
     return json.dumps(response)
 
 class Log:
   def GET(self):
-    return render.log()
+    return render.log(logs=logs.get_all_logs())
 
 class Edit:
   def GET(self):
@@ -206,6 +209,9 @@ class Edit:
     else:
       users.change_password(username, post['password'])
       response = {'message': 'true'}
+
+      print 'Change pwd'
+      logs.change_password(username)
     return json.dumps(response)
 
 
@@ -257,18 +263,54 @@ def GetSearchinfo():
 
 def run_minimodem(filename, bitrate, mark, space):
     command = "minimodem -r {} -M {} -S {} -f\
-    {}".format(str(bitrate),str(mark),str(space),str(filename))
+    {} -c 0.3".format(str(bitrate),str(mark),str(space),str(filename))
 
     try:
         process1 = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         process1.wait()
         for line in iter(process1.stdout.readline, b''):
             print "RESULT:",line
-
     except Exception,E:
         print "Error in executing minimodem"
         return 1
 
+def stereo2mono(wave_file):
+  """
+  Convert the stereo file to mono using Sox and default options
+  """
+  #Check if sox is installed
+  status, output = commands.getstatusoutput('sox')
+  if output[-9:] == 'not found':
+    print " "
+    print "Sox is not installed!"
+    print "Please install with: sudo apt-get install sox libsox*"
+    print " "
+    print "Exiting program."
+    print " "
+    sys.exit()
+  #Get the stereo filename
+  print " "
+  print "Stereo file, will convert to mono."
+  print " "
+  mono_name = "mono.wav"
+  status, output = commands.getstatusoutput('sox ' + wave_file + ' -c 1 ' + mono_name)
+  print " "
+  if status != 0:
+      print "Problem with file ", wave_file[:-4]
+      print "   Could not be converted to mono:,"
+      print output
+      print " "
+      print "Exiting program."
+      sys.exit()
+  else:
+      print "Stereo to mono conversion completed.\n"
+#   status, output = commands.getstatusoutput('rm -f ' + wave_file)
+#   print output
+#   status, output = commands.getstatusoutput('mv ' + mono_name + " " + wave_file)
+#   if status != 0:
+#   print output
+#     sys.exit()
+  return mono_name
 
 def float32_wav_file(sample_array, sample_rate):
   byte_count = (len(sample_array)) * 4  # 32-bit floats
@@ -291,6 +333,23 @@ def float32_wav_file(sample_array, sample_rate):
     wav_file += struct.pack("<f", float(sample))
   return wav_file
 
+class Test:
+  def GET(self):
+    return render.test()
+
+# Default status is close
+door_status = 0
+
+class Sse:
+  def GET(self):
+    web.header('content-type', 'text/event-stream')
+    web.header('Cache-Control', 'no-cache')
+    while True:
+      if door_status == 1:
+        yield 'data: %s\n\n' % (json.dumps({'door': 'open'}))
+        door_status == 0
+      time.sleep(1)
+
 if __name__ == "__main__":
     #app = web.application(urls, globals())
     #tCheck=MTimerClass(GetSearchinfo, '',  10);
@@ -298,3 +357,5 @@ if __name__ == "__main__":
     #tCheck.start();         #线程启动
     app.run()
     #run_minimodem('test.wav',100, 1600, 800)
+    #stereo2mono('cs.wav')
+

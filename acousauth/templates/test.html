@@ -1,41 +1,16 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Audio Recorder</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-  </head>
-  <body>
-    <div id="content" class="container">
-    <h1>Audio Recorder</h1>
-    <form class="clearfix signin js-signin" method="post">
-      <fieldset>
-        <div class="clearfix holding hasome">
-          <span class="username js-username holder">Username</span>
-          <input class="js-username-field js-initial-focus" type="text" name="username" autocomplete="on">
-        </div>
-        <div class="clearfix holding">
-          <span class="password holder">Password</span>
-          <input class="js-password-field" type="password" name="password">
-        </div>
-      </fieldset>
-      <div class="clearfix">
-        <button type="submit" class="submit btn primary-btn">Sign in</button>
-      </div>
-    </form>
-    </div>
-    <div id="footer">
-      &copy; Copyright 2013 by <a href="http://www.cse.buffalo.edu/">Buffalo CSE</a>
-    </div>
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="//code.jquery.com/jquery.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
-    <script src="js/respond.js"></script>
-  </body>
-</html>
-
+{% block content %}
+<script type="text/javascript" src="//code.jquery.com/jquery-1.8.0.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(
+    function() {
+      sse = new EventSource('/sse');
+      sse.onmessage = function(message) {
+        console.log('sse.onmessage!');
+        console.log(JSON.parse(message.data));
+        $('#output').append('<li>'+message.data+'</li>');
+      }
+  })
+</script>
+Hello world!
+<ul id="output"></ul>
+{% endblock %}

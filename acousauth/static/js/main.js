@@ -138,6 +138,8 @@ function startRecording() {
             first = false;
             audioRecorder.clear();
             audioRecorder.record();
+            audio = new Audio("/static/noise.wav");
+            audio.play();
             $(showcase).text("Recording....");
         }
 }
@@ -151,6 +153,8 @@ function stopRecording() {
         audioRecorder.getBuffers( postResult);
         //saveAudio();
         first = true;
+
+
         $(showcase).text("Recording......Done!");
         //saveAudio();
     }
@@ -221,7 +225,7 @@ function updateAnalysers(time) {
 
             // condition 1
             if(i > 50 && i < 90){
-            if(magnitude >= 100){
+            if(magnitude >= 190){
                 //broadcast noise
                 condition_1 = true;
         }

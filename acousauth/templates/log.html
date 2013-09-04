@@ -14,33 +14,16 @@
         <thead class="table-head">
           <tr>
             <td>USERNAME</td>
-            <td>PASSWORD</td>
-            <td>AUTHORITY</td>
-            <td>CREATED DATE</td>
+            <td>OPERATION</td>
+            <td>OPERATION_DATE</td>
           </tr>
         </thead>
         <tbody>
-          {% for user in users %}
+          {% for log in logs %}
           <tr>
-            <td>{{ user['username'] }}</td>
-            <td>{{ user['password'] }}</td>
-            {% if user['authority'] == 0 %}
-            <td><em class="tag-authority admin">admin</em></td>
-            {% else %}
-            <td><em class="tag-authority guest">guest</em></td>
-            {% endif %}
-            <td class="last">
-              <span class="pull-left">{{ user['create_date'].ctime() }}</span>
-
-              <ul class="tag-edit">
-                <li>
-                <span class="fui-new"></span>
-                </li>
-                <li class="last">
-                <span class="fui-cross"></span>
-                </li>
-              </ul>
-            </td>
+            <td>{{ log['username'] }}</td>
+            <td>{{ log['operation'] }}</td>
+            <td>{{ log['operate_date'].ctime() }}</td>
           </tr>
           {% endfor %}
         </tbody>

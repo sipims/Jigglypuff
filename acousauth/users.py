@@ -53,13 +53,13 @@ def del_user_by_name(name):
   collection.remove({'username':name})
 
 def change_password(name, password):
-  collection.update({'username': name}, {'$set': {'password': password}})
+  collection.update({'username': name}, {'$set': {'password': pswd(password)}})
 
 def pswd(password):
   #seasoned = password + SALTY_GOODNESS
   #seasoned = seasoned.encode('utf-8')
-  #return hashlib.md5(seasoned).hexdigest()
-  return password
+  return hashlib.sha1(password).hexdigest()
+  #return password
 
 def login_required(function, login_page='/login/'):
   def inner(*args, **kwargs):
