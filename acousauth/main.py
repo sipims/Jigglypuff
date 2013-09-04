@@ -235,7 +235,7 @@ class Add:
       response = {'message': 'false'}
     else:
       auth = 1 if post['authority'] == 'guest' else 0
-      user = users.add(username=post['username'], password=post['password'], authority=auth)
+      user = users.add(username=post['username'], password=users.pwd(post['password']), authority=auth)
       response = {'message': 'true'}
 
       logs.add_user(post['username'])
