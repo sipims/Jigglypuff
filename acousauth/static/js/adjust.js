@@ -93,7 +93,7 @@ function doneEncoding( blob ) {
     fd.append('fname','test.wav');
     fd.append('data',blob);
 
-        $(function(){
+
 
         $(showcase).text("Posting Data...");
          $.ajax({                                                 //调用jquery的ajax方法
@@ -107,9 +107,6 @@ function doneEncoding( blob ) {
                 $(showcase).text("Success");
             }
             });
-
-
-    });
 }
 
 function toggleRecording( e ) {

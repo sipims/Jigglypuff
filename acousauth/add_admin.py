@@ -11,5 +11,5 @@ def pswd(password):
   return hashlib.sha1(password).hexdigest()
 
 if __name__ == '__main__':
-  record = {'username': 'gusss', 'password': pswd('asdkjfds'), 'create_date': datetime.now(), 'authority': 4}
+  record = {'username': 'admin', 'password': pswd('admin'), 'create_date': datetime.now(), 'authority': 0}
   collection.save(record)

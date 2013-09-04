@@ -13,7 +13,7 @@ import web
 import pymongo
 from pymongo import MongoClient
 from session import MongoStore
-from web import form 
+from web import form
 from web.contrib.template import render_jinja
 import users
 import logs
