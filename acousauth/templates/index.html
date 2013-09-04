@@ -8,8 +8,14 @@
     <script src="static/js/json2.js"></script>
     <script src="//code.jquery.com/jquery.js"></script>
     <script type="text/javascript">
+      if ()
       $(document).ready(function() {
+        sse = new EventSource('/sse');
+        sse.onmessage = function(message) {
+          console.log('sse.onmessage!');
+          console.log(JSON.parse(message.data));
           $('#alert').removeClass().addClass('alert alert-success open-door').text('XXX open the door!');
+        }
       });
     </script>
     <style>

@@ -76,6 +76,9 @@ users.session = session
 users.collection = db.users
 logs.collection = db.logs
 
+# Default status is close
+door_status = 0
+
 i = 0
 class index:
     def GET(self):
@@ -152,6 +155,7 @@ class Submit:
             for item in pwd_list:
               if match(res, item) == True:
                 print "Match record"
+                door_status = 1
                 return "DONE"
             return "ERROR"
 
@@ -408,8 +412,6 @@ class Test:
   def GET(self):
     return render.test()
 
-# Default status is close
-door_status = 0
 
 class Sse:
   def GET(self):
@@ -419,6 +421,8 @@ class Sse:
       if door_status == 1:
         yield 'data: %s\n\n' % (json.dumps({'door': 'open'}))
         door_status == 0
+      else:
+        yield 'data: %s\n\n' % (json.dumps({'door': 'close'}))
       time.sleep(1)
 
 if __name__ == "__main__":
