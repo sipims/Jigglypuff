@@ -179,13 +179,31 @@ def make_calibration(lowfreq, highfreq, filename):
 def create_noise(origin, received):
     ori = WaveData(origin)
     base = WaveData(received)
-    #print len(base.array)
-    #print len(ori.array)
-    print base.array[:1000]
+    print len(base.array)
+    print len(ori.array)
+    #print base.array[:1000]
     ava_cut = []
+    j = 0
     for i in range(len(base.array)):
         if find_zero(base.array[i-1], base.array[i]) == True:
-            ava_cut.append(i)
+            ava_cut.append(j)
+        j = j + 1
+    new_cut  = []
+    for k in range(len(ava_cut)):
+        new_cut.append(ava_cut[k-1])
+        new_cut.append(ava_cut[k])
+
+    m = range(len(ava_cut))
+    random.shuffle(m)
+    #iint m
+    #print new_cut
+    # create wave file (stereo)
+    wavfile = wave.open('justfortest.wav','wb')
+    wavfile.setparams((1, 2, 44100, 44100*4, 'NONE', 'not compressed'))
+    for item in m:
+        #print new_cut[item*2],new_cut[item*2+1]
+        wavfile.writeframes(base.data[new_cut[item*2]:new_cut[item*2+1]])
+    wavfile.close()
 
 def find_zero(poA, poB):
     if poA < 0 and poB > 0:
@@ -209,8 +227,8 @@ def make_sinewave(samples, hz, frame_rate, amp):
 
 #__make_soundfile('sine.wav')
 #make_calibration(600, 800, 'cali.wav')
-psudorand_noise(RATE, WAVE, './static/noise.wav')
-#create_noise('./static/noise.wav','noise.wav')
+#psudorand_noise(RATE, WAVE, './static/noise.wav')
+create_noise('mono_1.wav','noise_1.wav')
 # A tone, 2 seconds, 44100 samples per second
 #tone = note(600,2,amp=10000)
 

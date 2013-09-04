@@ -53,7 +53,6 @@ function postResult(buffers){
     //alert(buffers[0][10]);
     //var myJsonString = JSON.stringify(buffers[0]);
     //alert(buffers[0].length);
-    //alert("HIHI postresult");
     var canvas = document.getElementById( "wavedisplay" );
 
     drawBuffer( canvas.width, canvas.height, canvas.getContext('2d'), buffers[0] );
@@ -93,10 +92,7 @@ function doneEncoding( blob ) {
     var fd = new FormData();
     fd.append('fname','test.wav');
     fd.append('data',blob);
-    //alert("HIHI Doneencoding");
 
-        $(showcase).text("Posting Data...");
-        //$(function(){
 
         $(showcase).text("Posting Data...");
          $.ajax({                                                 //调用jquery的ajax方法
@@ -111,8 +107,6 @@ function doneEncoding( blob ) {
             }
             });
 
-
-    //});
 }
 
 function toggleRecording( e ) {

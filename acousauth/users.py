@@ -55,16 +55,6 @@ def del_user_by_name(name):
 def change_password(name, password):
   collection.update({'username': name}, {'$set': {'password': pswd(password)}})
 
-def get_all_password():
-  users = collection.find();
-  l = []
-  for user in users:
-    #print user['password']
-    l.append(user['password'])
-
-  return l
-  
-
 def pswd(password):
   #seasoned = password + SALTY_GOODNESS
   #seasoned = seasoned.encode('utf-8')

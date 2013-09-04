@@ -140,7 +140,7 @@ def align_file(original, noise, ampV, default_cut):
 
 
 if __name__ == "__main__":
-    #align_file("mono.wav", "noise.wav", 20000, 5000)
+    align_file("mono.wav", "noise.wav", 20000, 5000)
     '''
     w1 = WaveData("noise.wav")
     w2 = WaveData("mono.wav")
