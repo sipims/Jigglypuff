@@ -419,9 +419,11 @@ class Sse:
     web.header('Cache-Control', 'no-cache')
     while True:
       if door_status == 1:
+        print "open"
         yield 'data: %s\n\n' % (json.dumps({'door': 'open'}))
         door_status == 0
       else:
+        print "close"
         yield 'data: %s\n\n' % (json.dumps({'door': 'close'}))
       time.sleep(1)
 
