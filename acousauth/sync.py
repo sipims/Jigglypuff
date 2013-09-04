@@ -1,7 +1,7 @@
 import wave
 from struct import *
 #read wav file
-wav_file = wave.open('noise.wav', "rb")
+wav_file = wave.open('mixed.wav', "rb")
 data = wav_file.readframes(wav_file.getnframes())
 
 s = []

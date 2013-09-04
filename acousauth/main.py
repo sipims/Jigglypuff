@@ -17,6 +17,8 @@ import json
 import re
 import sys,wave
 import subprocess
+from align import align_file
+from levenshtein import match
 #import numpy as np
 #from scikits.audiolab import Sndfile, Format
 #import struct
@@ -35,7 +37,7 @@ render = render_jinja(
 urls = (
     '/', 'index',
     '/index', 'index',
-    '/submit', 'submit',
+    '/submit', 'Submit',
     '/login', 'Login',
     '/admin', 'Admin',
     '/add', 'Add',
@@ -43,17 +45,19 @@ urls = (
     '/edit', 'Edit',
     '/test', 'Test',
     '/sse', 'Sse',
+    '/adjusting', 'Adjusting',
+    '/noise', 'Noise',
 )
 
 # Create app object here
-app = web.application(urls, globals())
+#app = web.application(urls, globals())
 
 # Get mongodb
 client = MongoClient()
 db = client.mydb2
 
 # Get GridFS for avatars
-gfsAvatar = gridfs.GridFS(db)
+#gfsAvatar = gridfs.GridFS(db)
 
 
 # Create session
@@ -75,9 +79,37 @@ class index:
         #data = web.data()
         return "OK"
 
+class Adjusting:
+    def GET(self):
+        tmpl = web.template.render("tmpl/")
+        return tmpl.adjust()
 
-class submit:
+    def POST(self):
+        #data = web.data()
+        return "OK"
 
+class Noise:
+    def POST(self):
+        global i
+        data = web.data()
+        filename = "temp["+str(i)+"].wav"
+        if len(data) > 800000:
+          # process the audio data, delete several unused info
+          data = data[229:-44]
+          # create wave file (stereo)
+          wavfile = wave.open(filename,'wb')
+          wavfile.setparams((2, 2, 44100, 44100*4, 'NONE', 'not compressed'))
+          wavfile.writeframes(data)
+          wavfile.close()
+          # change it to mono version
+          stereo2mono(filename,"noise.wav")
+          i = i + 1
+        else:  # if data length is too small, pass
+          pass
+        return "ERROR"
+
+
+class Submit:
 
     def POST(self):
         global i
@@ -96,14 +128,29 @@ class submit:
           wavfile.writeframes(data)
           wavfile.close()
           # change it to mono version
-          stereo2mono(filename)
+          stereo2mono(filename, "mono.wav")
+          res_test = run_minimodem('mono.wav',100, 800, 600)
+          align_file("mono.wav", "noise.wav", 20000, 5000)
+          # denoise
+          run_sox()
           # run minimodem to decode FSK
-          run_minimodem('mono.wav',100, 800, 600)
+          res = run_minimodem('out.wav',100, 800, 600)
+          #print match('ddb1cb5590e7530043830f044779250667cb148a',res)
+          print match('chensi',res)
+          '''
+          if res != 1:
+            for item in records:
+              if match(res, item) == True:
+                return "DONE"
+            return "ERROR"
+
+          '''
+
           i = i + 1
           #print data
         else:  # if data length is too small, pass
           pass
-        return "OK"
+        return "ERROR"
 
 class Login:
   '''
@@ -263,8 +310,20 @@ def GetSearchinfo():
 
 def run_minimodem(filename, bitrate, mark, space):
     command = "minimodem -r {} -M {} -S {} -f\
-    {} -c 0.3".format(str(bitrate),str(mark),str(space),str(filename))
+    {} -c 1".format(str(bitrate),str(mark),str(space),str(filename))
 
+    try:
+        process1 = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        process1.wait()
+        for line in iter(process1.stdout.readline, b''):
+            print "RESULT:",line
+            return line
+    except Exception,E:
+        print "Error in executing minimodem"
+        return 1
+
+def run_sox():
+    command = "sh denoise.sh 100"
     try:
         process1 = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         process1.wait()
@@ -274,7 +333,9 @@ def run_minimodem(filename, bitrate, mark, space):
         print "Error in executing minimodem"
         return 1
 
-def stereo2mono(wave_file):
+
+
+def stereo2mono(wave_file, mono_name):
   """
   Convert the stereo file to mono using Sox and default options
   """
@@ -292,7 +353,7 @@ def stereo2mono(wave_file):
   print " "
   print "Stereo file, will convert to mono."
   print " "
-  mono_name = "mono.wav"
+  #mono_name = "mono.wav"
   status, output = commands.getstatusoutput('sox ' + wave_file + ' -c 1 ' + mono_name)
   print " "
   if status != 0:
@@ -352,6 +413,8 @@ class Sse:
 
 if __name__ == "__main__":
     #app = web.application(urls, globals())
+   # run_sox()
+    app = web.application(urls, globals())
     #tCheck=MTimerClass(GetSearchinfo, '',  10);
     #tCheck.setDaemon(True); # 随主线程一起结果
     #tCheck.start();         #线程启动
