@@ -436,7 +436,7 @@ class Sse:
       if door_status == 1:
         print "open"
         yield 'data: %s\n\n' % (json.dumps({'door': 'open'}))
-        time.sleep(5)
+        time.sleep(15)
         f = open("succ",'w')
         f.write('0')
         f.close()

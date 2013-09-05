@@ -14,7 +14,9 @@
           var data = JSON.parse(message.data);
           console.log(data.door);
           if(data.door == "open") {
-            $('#alert').removeClass().addClass('alert alert-success open-door').text('Open the door!');
+            //$('#alert').removeClass().addClass('alert alert-success open-door').text('Open the door!');
+            $('#alert').show();
+            $(showcase).text("Monitoring...");
           } else {
             $('#alert').removeClass().addClass('hide');
           }
@@ -30,10 +32,16 @@
       background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%); }
     </style>
     <div class="container center">
-      <div id="alert" class="hide"></div>
+      <div id="alert" class="hide">      
+        <div class="notify successbox">
+        <h1>Success!</h1>
+        <span class="alerticon"><img src="static/images/check.png" alt="checkmark" /></span>
+        <p>Door Opening!</p>
+      </div>
+    </div>
       <div class="main-frame">
         <canvas id="analyser" width="768" height="200"></canvas><br>
-        <div id="showcase">Monitoring</div>
+        <div id="showcase">Monitoring...</div>
         <canvas id="wavedisplay" width="768" height="200"></canvas><br>
       </div>
     </div>

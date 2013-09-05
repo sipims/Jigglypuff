@@ -103,7 +103,7 @@ function doneEncoding( blob ) {
             contentType: false,
             success: function(msg){  
                 //alert("SUCC");
-                $(showcase).text("Success");
+                $(showcase).text("Waiting for Authentication");
             }
             });
 
