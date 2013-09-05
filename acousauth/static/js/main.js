@@ -228,7 +228,7 @@ function updateAnalysers(time) {
         }
             // condition 2
             if(i > 50 && i < 80){
-                if(magnitude >= 100){
+                if(magnitude >= 220){
                     condition_2 = true;
                 }
             }
