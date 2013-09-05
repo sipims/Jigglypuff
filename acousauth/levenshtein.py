@@ -62,28 +62,28 @@ def match(first, second):
     print "STR2",second
     print "LEN1",str(min_length)
     print "LEN2",str(max_length)
-    for offest in range(max_length - min_length):
+    for offest in range(max_length - min_length + 10):
         print "OFFSET"
         print offest
         test_string = max_string[offest:min_length+offest]
         #score = editdist.distance(min_string, test_string)
         print test_string
         score = levenshtein_distance(min_string,test_string)
-        #print score
-        if score < 8:
+        print score
+        if score < 15:
             print "SCORE:::"
             print score
             print "test_string"
             print test_string
             print "min_string"
             print min_string
-            return True
+            #return True
     return False
 
 if __name__=="__main__":
     #from sys import argv
-    first = "�v��k��tη�iamfine?f�ż�6�\"Ѵ"
-    second = "iamfine"
+    first = "@$667234d8ff4d6032s99adw9<eb087b6abr3f⛿"
+    second = "672c346d8ff4d6032c91ad794eb087b26ab6b3fb"
     print match(first, second)
     #print editdist.distance(first,second)
     #print levenshtein(first,second)
