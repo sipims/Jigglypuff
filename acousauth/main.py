@@ -442,8 +442,13 @@ class Sse:
         f.close()
         door_status = 0
       elif door_status == 2:
-        print "close"
-        yield 'data: %s\n\n' % (json.dumps({'door': 'close'}))
+        print "error"
+        yield 'data: %s\n\n' % (json.dumps({'door': 'error'}))
+        time.sleep(15)
+        f = open("error". 'w')
+        f.write('0')
+        f.close()
+        door_status = 0
       else:
         print "close"
         yield 'data: %s\n\n' % (json.dumps({'door': 'close'}))
