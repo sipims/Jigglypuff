@@ -141,7 +141,7 @@ class Submit:
           wavfile.close()
           # change it to mono version
           stereo2mono(filename, "mono.wav")
-          res_test = run_minimodem('mono.wav',100, 800, 600)
+          run_minimodem('mono.wav',100, 800, 600)
           align_file("mono.wav", "noise.wav", 20000, 5000)
           # denoise
           run_sox()
@@ -154,7 +154,7 @@ class Submit:
 
           if res != 1:
             for item in pwd_list:
-              if match1(res, item) == True:
+              if match(res, item) == True:
                 print res
                 print item
                 print "Match record"
@@ -338,7 +338,7 @@ def run_minimodem(filename, bitrate, mark, space):
         for line in iter(process1.stdout.readline, b''):
             print "RESULT:",line
             return line
-    except Exception,E:
+    except Exception:
         print "Error in executing minimodem"
         return 1
 
@@ -349,7 +349,7 @@ def run_sox():
         process1.wait()
         for line in iter(process1.stdout.readline, b''):
             print "RESULT:",line
-    except Exception,E:
+    except Exception:
         print "Error in executing minimodem"
         return 1
 
