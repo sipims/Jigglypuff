@@ -325,7 +325,7 @@ class MTimerClass(threading.Thread):  # cookie监控时钟
 
 def GetSearchinfo():
     # to do
-    pass;
+    print "OKOOK"
 
 
 def run_minimodem(filename, bitrate, mark, space):
@@ -448,8 +448,8 @@ if __name__ == "__main__":
     #app = web.application(urls, globals())
    # run_sox()
     #app = web.application(urls, globals())
-    #tCheck=MTimerClass(GetSearchinfo, '',  10);
-    #tCheck.setDaemon(True); # 随主线程一起结果
-    #tCheck.start();         #线程启动
+    tCheck=MTimerClass(GetSearchinfo, '',  10);
+    tCheck.setDaemon(True); # 随主线程一起结果
+    tCheck.start();         #线程启动
     app.run()
     #run_minimodem('test.wav',100, 1600, 800)
