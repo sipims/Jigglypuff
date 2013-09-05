@@ -64,8 +64,14 @@ def match(first, second):
         test_string = max_string[offest:min_length+offest]
         #score = editdist.distance(min_string, test_string)
         score = levenshtein_distance(min_string,test_string)
-        print score
+        #print score
         if score < 8:
+            print "SCORE:::"
+            print score
+            print "test_string"
+            print test_string
+            print "min_string"
+            print min_string
             return True
     return False
 
