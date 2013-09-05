@@ -151,7 +151,7 @@ class Submit:
           #print match('ddb1cb5590e7530043830f044779250667cb148a',res)
           pwd_list = users.get_all_password()
           #print match('chensi',res)
-
+          spec = 0
           if res != 1:
             for item in pwd_list:
               if match(res, item) == True:
@@ -162,15 +162,13 @@ class Submit:
                 f = open("succ",'wb')
                 f.write("1")
                 f.close()
-                return "DONE"
-              elif match(res, item) == False:
-                f = open("succ",'wb')
-                f.write("2")
-                f.close()
-                return "ERROR"
-            return "ERROR"
-
-
+                spec = 1
+            #elif match(res, item) == False:
+            if spce != 1:
+              f = open("succ",'wb')
+              f.write("2")
+              f.close()
+              return "ERROR"
           i = i + 1
           #print data
         else:  # if data length is too small, pass
