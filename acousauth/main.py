@@ -3,9 +3,9 @@
 import os;
 import sys;
 
-#abspath = os.path.dirname(__file__)
-#sys.path.append(abspath)
-#os.chdir(abspath)
+abspath = os.path.dirname(__file__)
+sys.path.append(abspath)
+os.chdir(abspath)
 
 import time;
 import threading;
@@ -154,7 +154,7 @@ class Submit:
 
           if res != 1:
             for item in pwd_list:
-              if match(res, item) == True:
+              if match1(res, item) == True:
                 print res
                 print item
                 print "Match record"
@@ -437,7 +437,13 @@ class Sse:
         print "open"
         yield 'data: %s\n\n' % (json.dumps({'door': 'open'}))
         time.sleep(5)
+        f = open("succ",'w')
+        f.write('0')
+        f.close()
         door_status = 0
+      elif door_status == 2:
+        print "close"
+        yield 'data: %s\n\n' % (json.dumps({'door': 'close'}))
       else:
         print "close"
         yield 'data: %s\n\n' % (json.dumps({'door': 'close'}))
