@@ -141,7 +141,7 @@ class Submit:
           wavfile.close()
           # change it to mono version
           stereo2mono(filename, "mono.wav")
-          run_minimodem('mono.wav',100, 800, 600)
+          res_test = run_minimodem('mono.wav',100, 800, 600)
           align_file("mono.wav", "noise.wav", 20000, 5000)
           # denoise
           run_sox()
@@ -155,13 +155,11 @@ class Submit:
           if res != 1:
             for item in pwd_list:
               if match(res, item) == True:
-                print res
-                print item
                 print "Match record"
-                #door_status = 1
-                f = open("succ",'wb')
-                f.write("1")
-                f.close()
+		print "change Door status"
+		print door_status
+                door_status = 1
+		print door_status
                 return "DONE"
             return "ERROR"
 
@@ -325,7 +323,7 @@ class MTimerClass(threading.Thread):  # cookie监控时钟
 
 def GetSearchinfo():
     # to do
-    print "OKOOK"
+    pass;
 
 
 def run_minimodem(filename, bitrate, mark, space):
@@ -338,7 +336,7 @@ def run_minimodem(filename, bitrate, mark, space):
         for line in iter(process1.stdout.readline, b''):
             print "RESULT:",line
             return line
-    except Exception:
+    except Exception,E:
         print "Error in executing minimodem"
         return 1
 
@@ -349,7 +347,7 @@ def run_sox():
         process1.wait()
         for line in iter(process1.stdout.readline, b''):
             print "RESULT:",line
-    except Exception:
+    except Exception,E:
         print "Error in executing minimodem"
         return 1
 
@@ -425,29 +423,10 @@ class Sse:
     web.header('content-type', 'text/event-stream')
     web.header('Cache-Control', 'no-cache')
     while True:
-      f = open("succ",'rb')
-      k = f.readline()
-      f.close()
-      try:
-        if int(k) == 1:
-          door_status = 1
-      except Exception:
-        pass
       if door_status == 1:
         print "open"
         yield 'data: %s\n\n' % (json.dumps({'door': 'open'}))
-        time.sleep(15)
-        f = open("succ",'w')
-        f.write('0')
-        f.close()
-        door_status = 0
-      elif door_status == 2:
-        print "error"
-        yield 'data: %s\n\n' % (json.dumps({'door': 'error'}))
-        time.sleep(15)
-        f = open("succ", 'w')
-        f.write('0')
-        f.close()
+        time.sleep(5)
         door_status = 0
       else:
         print "close"
