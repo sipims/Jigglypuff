@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Audio Recorder - Admin Users{% endblock %}
+{% block content %}
+    <script src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
+    <script src="static/js/audiodisplay.js"></script>
+    <script src="static/js/recorderjs/recorder.js"></script>
+    <script src="static/js/main.js"></script>
+    <script src="static/js/json2.js"></script>
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        sse = new EventSource('/sse');
+        sse.onmessage = function(message) {
+          var data = JSON.parse(message.data);
+          console.log(data.door);
+          if(data.door == "open") {
+            //$('#alert').removeClass().addClass('alert alert-success open-door').text('Open the door!');
+            $('#alert').show();
+            $(showcase).text("Monitoring...");
+          } else {
+            $('#alert').removeClass().addClass('hide');
+          }
+        }
+      });
+    </script>
+    <style>
+      body { font: 14pt Arial, sans-serif; background: lightgrey; }
+      select { font: 14pt Arial, sans-serif; }
+      body { text-align: center; margin-top: 12pt;}
+      canvas { display: inline-block; background: #202020; box-shadow: 0px 0px 10px blue;}
+      #record.recording { background: red;
+      background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%); }
+    </style>
+    <div class="container center">
+      <div id="alert" class="hide">      
+        <div class="notify successbox">
+        <h1>Success!</h1>
+        <span class="alerticon"><img src="static/images/check.png" alt="checkmark" /></span>
+        <p>Door Opening!</p>
+      </div>
+    </div>
+      <div class="main-frame">
+        <canvas id="analyser" width="768" height="200"></canvas><br>
+        <div id="showcase">Monitoring</div>
+        <canvas id="wavedisplay" width="768" height="200"></canvas><br>
+      </div>
+    </div>
+{% endblock %}
