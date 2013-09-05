@@ -77,7 +77,7 @@ def match(first, second):
             print test_string
             print "min_string"
             print min_string
-            #return True
+            return True
     return False
 
 if __name__=="__main__":
