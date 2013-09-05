@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*-coding:utf-8 -*-
-import difflib
-import sys
-import editdist
+#import difflib
+#import sys
+#import editdist
 def levenshtein(a,b):
     "Calculates the Levenshtein distance between a and b."
     n, m = len(a), len(b)
@@ -22,6 +22,7 @@ def levenshtein(a,b):
             current[j] = min(add, delete, change)
             
     return current[n]
+
 def levenshtein_distance(first, second):
     """Find the Levenshtein distance between two strings."""
     if len(first) > len(second):
@@ -54,18 +55,6 @@ def get_min_length(sig1, sig2):
 
 
 def match(first, second):
-    len_first = len(first)
-    len_second = len(second)
-    if len_first is 0 or len_second is 0:
-        return 0
-    matrix = [range(len_second+1) for x in range(len_first+1)]
-    for m in range(1,len_first+1):
-        for n in range(1, len_second+1):
-            one = matrix[m][n-1]+1
-            two = matrix[m-1][n]+1
-            tree = matrix[m-1][n-1]
-
-def match1(first, second):
     first = str(first)
     second = str(second)
     min_length, min_string, max_length, max_string = get_min_length(first, second)
@@ -73,17 +62,18 @@ def match1(first, second):
     #print "LEN2",str(max_length)
     for offest in range(max_length - min_length):
         test_string = max_string[offest:min_length+offest]
-        score = editdist.distance(min_string, test_string)
+        #score = editdist.distance(min_string, test_string)
+        score = levenshtein_distance(min_string,test_string)
         print score
-        if score < 5:
+        if score < 8:
             return True
     return False
 
 if __name__=="__main__":
     #from sys import argv
-    #first = "�v��k��tη�icafine?f�ż�6�\"Ѵ"
-    #second = "iamfine"
-    #print match1(first, second)
+    first = "�v��k��tη�iamfine?f�ż�6�\"Ѵ"
+    second = "iamfine"
+    print match(first, second)
     #print editdist.distance(first,second)
     #print levenshtein(first,second)
     #print levenshtein_distance(first,second)
