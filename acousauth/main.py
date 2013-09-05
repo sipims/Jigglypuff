@@ -428,17 +428,16 @@ class Sse:
       f = open("succ",'rb')
       k = f.readline()
       f.close()
-      print k
-      if int(k) == 1:
-        door_status = 1
+      try:
+        if int(k) == 1:
+          door_status = 1
+      except Exception:
+        pass
       if door_status == 1:
         print "open"
         yield 'data: %s\n\n' % (json.dumps({'door': 'open'}))
         time.sleep(5)
         door_status = 0
-        f = open("succ",'wb')
-        f.write('0')
-        f.close()
       else:
         print "close"
         yield 'data: %s\n\n' % (json.dumps({'door': 'close'}))
@@ -448,8 +447,8 @@ if __name__ == "__main__":
     #app = web.application(urls, globals())
    # run_sox()
     #app = web.application(urls, globals())
-    tCheck=MTimerClass(GetSearchinfo, '',  10);
-    tCheck.setDaemon(True); # 随主线程一起结果
-    tCheck.start();         #线程启动
+    #tCheck=MTimerClass(GetSearchinfo, '',  10);
+    #tCheck.setDaemon(True); # 随主线程一起结果
+    #tCheck.start();         #线程启动
     app.run()
     #run_minimodem('test.wav',100, 1600, 800)
